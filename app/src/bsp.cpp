@@ -22,9 +22,18 @@
 */
 
 #include <bsp.h>
+#include <yss/instance.h>
 
 void initializeBoard(void)
 {
-	
+	using namespace define::gpio;
+
+	// UART4 초기화
+	gpioC.setAsAltFunc(10, altfunc::PC10_USART3_TX);
+	// STM32F1 시리즈는 UART의 RX를 Alternate Function으로 설정하면 안됨
+
+	uart4.enableClock();
+	uart4.initialize(115200, 128);
+	uart4.enableInterrupt();
 }
 
