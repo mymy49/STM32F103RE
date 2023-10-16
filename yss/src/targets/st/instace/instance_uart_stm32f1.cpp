@@ -47,7 +47,7 @@ static uint32_t getApb2ClockFrequency(void)
 	return clock.getApb2ClockFrequency();
 }
 
-#if defined(USART1) && defined(UART1_ENABLE)
+#if defined(USART1) && USART1_ENABLE
 static void enableUart1Clock(bool en)
 {
 	clock.lock();
@@ -110,7 +110,7 @@ extern "C"
 }
 #endif
 
-#if defined(USART2) && defined(UART2_ENABLE)
+#if defined(USART2) && USART2_ENABLE
 static void enableUart2Clock(bool en)
 {
 	clock.lock();
@@ -174,7 +174,7 @@ extern "C"
 
 #endif
 
-#if defined(USART3) && defined(UART3_ENABLE)
+#if defined(USART3) && USART3_ENABLE
 static void enableUart3Clock(bool en)
 {
 	clock.lock();
@@ -238,7 +238,7 @@ extern "C"
 
 #endif
 
-#if defined(UART4) && defined(UART4_ENABLE)
+#if defined(UART4) && UART4_ENABLE
 static void enableUart4Clock(bool en)
 {
 	clock.lock();

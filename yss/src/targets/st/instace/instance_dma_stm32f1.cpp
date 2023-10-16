@@ -498,12 +498,12 @@ extern "C"
 {
 	void YSS_DMA2_Channel4_5_IRQHandler(void)
 	{
-		uint32_t ifr = DMA2->IFCR;
+		uint32_t ifr = DMA2->ISR;
 
-		if(ifr & (DMA_IFCR_CGIF4_Msk | DMA_IFCR_CTEIF4_Msk))
+		if(ifr & DMA_ISR_GIF4_Msk || ifr & DMA_ISR_TCIF4_Msk)
 			dmaChannel11.isr();
 
-		if(ifr & (DMA_IFCR_CGIF5_Msk | DMA_IFCR_CTEIF5_Msk))
+		if(ifr & DMA_ISR_GIF5_Msk || ifr & DMA_ISR_TCIF5_Msk)
 			dmaChannel12.isr();
 	}
 }

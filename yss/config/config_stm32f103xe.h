@@ -30,7 +30,7 @@
 #define YSS_CONFIG__H_
 
 // ####################### 외부 크리스탈 클럭 주파수 설정 #######################
-#define HSE_CLOCK_FREQ		12000000
+#define HSE_CLOCK_FREQ		8000000
 
 // ####################### 스케줄러 설정 #######################
 
@@ -60,6 +60,38 @@
 // 주의 
 // 1. TIMER, PWM은 실제 동일한 장치지만 OS 구조상 별도의 장치로 표현한다. 그러므로 동일한 번호의 PWM과 TIMER는 동시에 활성화 되지 못한다.
 
+// ADC 활성화
+#define ADC1_ENABLE			false
+#define ADC2_ENABLE			false
+#define ADC3_ENABLE			false
+
+// CAN 활성화
+#define CAN1_ENABLE			false
+
+// DAC 활성화
+#define DAC1_ENABLE			false
+
+// I2C 활성화
+#define I2C1_ENABLE			false
+#define I2C2_ENABLE			false
+
+// I2S 활성화
+#define I2S2_ENABLE			false
+#define I2S3_ENABLE			false
+
+// PWM 활성화
+#define PWM1_ENABLE			false
+#define PWM2_ENABLE			false
+#define PWM3_ENABLE			false
+#define PWM4_ENABLE			false
+#define PWM5_ENABLE			false
+#define PWM8_ENABLE			false
+
+// SPI 활성화
+#define SPI1_ENABLE			false
+#define SPI2_ENABLE			false
+#define SPI3_ENABLE			false
+
 // TIMER 활성화
 #define TIM1_ENABLE			false
 #define TIM2_ENABLE			false
@@ -69,5 +101,12 @@
 #define TIM6_ENABLE			true
 #define TIM7_ENABLE			false
 #define TIM8_ENABLE			false
+
+// UART 활성화
+#define USART1_ENABLE		false
+#define USART2_ENABLE		false
+#define USART3_ENABLE		false
+#define UART4_ENABLE		false
+#define UART5_ENABLE		false
 
 #endif
