@@ -104,7 +104,7 @@
 // UART 활성화
 #define USART1_ENABLE		false
 #define USART2_ENABLE		false
-#define USART3_ENABLE		false
+#define USART3_ENABLE		true
 #define UART4_ENABLE		true
 #define UART5_ENABLE		false
 
