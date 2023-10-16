@@ -538,7 +538,7 @@ extractShortName :
 			return true;
 	}
 	
-	if(*csrc == 0 && *cmp == ' ' || *cmp == *csrc)
+	if((*csrc == 0 && *cmp == ' ') || *cmp == *csrc)
 		return false;
 	else
 		return true;
