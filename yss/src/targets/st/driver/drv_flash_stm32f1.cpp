@@ -31,7 +31,7 @@
 #include <drv/Flash.h>
 #include <yss/thread.h>
 #include <yss/reg.h>
-#include <targets/st/bitfield_stm32f103xx.h>
+#include <targets/st/bitfield.h>
 
 #if defined(STM32F1_N)
 void Flash::setLatency(uint32_t freq)

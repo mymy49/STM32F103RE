@@ -185,7 +185,16 @@ namespace define
 				};
 			}
 		}
-
+#if defined(STM32F407xx)
+		namespace  powerScale
+		{
+			enum
+			{
+				SCALE2_MODE = 0,
+				SCALE1_MODE,
+			};
+		}
+#else
 		namespace  powerScale
 		{
 			enum
@@ -195,6 +204,7 @@ namespace define
 				SCALE1_MODE,
 			};
 		}
+#endif
 	}
 	
 	// DMA

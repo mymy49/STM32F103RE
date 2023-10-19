@@ -30,18 +30,7 @@
 #include <drv/Sdram.h>
 #include <yss.h>
 #include <yss/reg.h>
-
-#if defined(STM32F446xx)
-#include <targets/st/define_stm32f446xx.h>
-#include <targets/st/bitfield_stm32f446xx.h>
-#elif defined(STM32F429xx)
-#include <targets/st/define_stm32f429xx.h>
-#include <targets/st/bitfield_stm32f429xx.h>
-#elif defined(STM32F746xx)
-#include <targets/st/bitfield_stm32f746xx.h>
-#elif defined(STM32F767xx)
-#include <targets/st/bitfield_stm32f767xx.h>
-#endif
+#include <targets/st/bitfield.h>
 
 #if defined(FMC_Bank5_6)
 

@@ -29,6 +29,7 @@
 
 #include <drv/Gpio.h>
 #include <yss/reg.h>
+#include <targets/st/bitfield.h>
 
 Gpio::Gpio(const Drv::Setup drvSetup, const Setup setup) : GpioBase(drvSetup)
 {

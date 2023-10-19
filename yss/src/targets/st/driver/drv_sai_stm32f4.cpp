@@ -25,7 +25,7 @@
 
 #include <drv/mcu.h>
 
-#if defined(STM32F4_N)
+#if defined(STM32F4_N) && defined(SAI1)
 
 #include <yss/debug.h>
 #include <stdint.h>
@@ -33,14 +33,7 @@
 #include <drv/Sai.h>
 #include <yss/thread.h>
 #include <yss/reg.h>
-
-#if defined(STM32F446xx)
-#include <targets/st/define_stm32f446xx.h>
-#include <targets/st/bitfield_stm32f446xx.h>
-#elif defined(STM32F429xx)
-#include <targets/st/define_stm32f429xx.h>
-#include <targets/st/bitfield_stm32f429xx.h>
-#endif
+#include <targets/st/bitfield.h>
 
 #define MAIN_TRANSMITTER	0
 #define MAIN_RECEIVER		1

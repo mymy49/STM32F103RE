@@ -31,12 +31,7 @@
 
 #include <drv/Dac.h>
 #include <yss/reg.h>
-
-#if defined(STM32F446xx)
-#include <targets/st/bitfield_stm32f446xx.h>
-#elif defined(STM32F746xx)
-#include <targets/st/bitfield_stm32f746xx.h>
-#endif
+#include <targets/st/bitfield.h>
 
 Dac::Dac(const Drv::Setup drvSetup, const Setup setup) : Drv(drvSetup)
 {

@@ -27,14 +27,7 @@
 
 #if defined(STM32F4_N) || defined(STM32F7_N)
 
-#if defined(STM32F446xx)
-#include <targets/st/bitfield_stm32f446xx.h>
-#elif defined(STM32F767xx)
-#include <targets/st/bitfield_stm32f767xx.h>
-#elif defined(STM32F746xx)
-#include <targets/st/bitfield_stm32f746xx.h>
-#endif
-
+#include <targets/st/bitfield.h>
 #include <drv/Flash.h>
 #include <yss/thread.h>
 
@@ -129,7 +122,7 @@ void Flash::setLatency(uint32_t frequency, uint8_t vcc)
 
 	setFieldData(FLASH->ACR, FLASH_ACR_LATENCY_Msk, wait, FLASH_ACR_LATENCY_Pos);
 }
-#elif defined(STM32F429xx) || defined(STM32F446xx) || defined(STM32F767xx) || defined(STM32F746xx)
+#elif defined(STM32F429xx) || defined(STM32F446xx) || defined(STM32F767xx) || defined(STM32F746xx) || defined(STM32F407xx)
 void Flash::setLatency(uint32_t freq, uint8_t vcc)
 {
 	uint32_t div, wait;

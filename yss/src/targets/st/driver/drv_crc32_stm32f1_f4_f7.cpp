@@ -29,14 +29,7 @@
 
 #include <drv/peripheral.h>
 #include <drv/Crc32.h>
-
-#if defined(GD32F10X_MD)
-#include <targets/st/bitfield_stm32f103xx.h>
-#elif defined(STM32F446xx)
-#include <targets/st/bitfield_stm32f446xx.h>
-#elif defined(STM32F746xx)
-#include <targets/st/bitfield_stm32f746xx.h>
-#endif
+#include <targets/st/bitfield.h>
 
 Crc32::Crc32(YSS_CRC32_Dev *peri, const Drv::Config drvConfig) : Drv(drvConfig)
 {

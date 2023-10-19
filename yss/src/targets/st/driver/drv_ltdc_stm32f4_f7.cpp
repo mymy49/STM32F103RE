@@ -29,14 +29,7 @@
 
 #include <drv/Ltdc.h>
 #include <yss/reg.h>
-
-#if defined(STM32F746xx)
-#include <targets/st/bitfield_stm32f746xx.h>
-#elif defined(STM32F767xx)
-#include <targets/st/bitfield_stm32f767xx.h>
-#elif defined(STM32F429xx)
-#include <targets/st/bitfield_stm32f429xx.h>
-#endif
+#include <targets/st/bitfield.h>
 
 Ltdc::Ltdc(const Drv::Config drvConfig) : Drv(drvConfig)
 {

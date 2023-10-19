@@ -31,14 +31,7 @@
 #include <drv/Uart.h>
 #include <yss/thread.h>
 #include <yss/reg.h>
-
-#if defined(STM32F446xx)
-#include <targets/st/bitfield_stm32f446xx.h>
-#elif defined(STM32F429xx)
-#include <targets/st/bitfield_stm32f429xx.h>
-#elif defined(STM32F103xB) || defined(STM32F103xE) || defined(GD32F10X_MD)
-#include <targets/st/bitfield_stm32f103xx.h>
-#endif
+#include <targets/st/bitfield.h>
 
 Uart::Uart(const Drv::Setup drvSetup, const Setup setup) : Drv(drvSetup)
 {

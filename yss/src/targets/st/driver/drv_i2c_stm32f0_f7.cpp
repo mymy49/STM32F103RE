@@ -33,12 +33,7 @@
 #include <yss/thread.h>
 #include <yss/reg.h>
 #include <util/ElapsedTime.h>
-
-#if defined(STM32F030xC)
-#include <targets/st/bitfield_stm32f030xx.h>
-#elif defined(STM32F746xx)
-#include <targets/st/bitfield_stm32f746xx.h>
-#endif
+#include <targets/st/bitfield.h>
 
 I2c::I2c(const Drv::Setup drvSetup, const Setup setup) : Drv(drvSetup)
 {

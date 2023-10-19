@@ -27,15 +27,10 @@
 #define YSS_CLASS_CLOCK_STM32_GD32F4_F7__H_
 
 #include <yss/error.h>
-#include <drv/mcu.h>
-
-#if defined(STM32F446xx)
-#include "define_stm32f446xx.h"
-#elif defined(STM32F446xx)
-#include "define_stm32f429xx.h"
-#endif
+#include <drv/peripheral.h>
 
 #if defined(STM32F429xx)
+#define OVER_DRVIE_USE
 #define PLL_USE
 #define PLL_P_USE
 #define PLL_Q_USE
@@ -49,6 +44,7 @@
 #define GET_SAI1A_FREQ_USE
 #define GET_SAI1B_FREQ_USE
 #elif defined(STM32F767xx)
+#define OVER_DRVIE_USE
 #define PLL_USE
 #define PLL_P_USE
 #define PLL_Q_USE
@@ -63,6 +59,7 @@
 #define GET_SAI1A_FREQ_USE
 #define GET_SAI1B_FREQ_USE
 #elif defined(STM32F746xx)
+#define OVER_DRVIE_USE
 #define PLL_USE
 #define PLL_P_USE
 #define PLL_Q_USE
@@ -78,6 +75,7 @@
 #define GET_SAI1A_FREQ_USE
 #define GET_SAI1B_FREQ_USE
 #elif defined(STM32F446xx)
+#define OVER_DRVIE_USE
 #define PLL_USE
 #define PLL_P_USE
 #define PLL_Q_USE
@@ -97,6 +95,10 @@
 #define GET_SAI1_FREQ_USE
 #define GET_SAI2_FREQ_USE
 //#define SET_I2S_CKIN_FREQ_USE
+#elif defined(STM32F407xx)
+#define PLL_USE
+#define PLL_P_USE
+#define PLL_Q_USE
 #endif
 
 class Clock : public ClockBase
@@ -215,7 +217,9 @@ public:
 	//
 	// bool enable
 	//		활성화 여부를 설정한다. true를 설정시 활성화한다.
+#if defined(FMC_Bank5_6)
 	void enableSdram(bool enable = true);
+#endif
 
 #if defined(GD32F4) || defined(STM32F429xx) || defined(STM32F7)
 	void setLtdcDivisionFactor(uint8_t div);

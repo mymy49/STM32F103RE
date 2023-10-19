@@ -25,10 +25,7 @@
 #include <drv/Sdmmc.h>
 #include <yss/thread.h>
 #include <yss/reg.h>
-
-#if defined(STM32F746xx)
-#include <targets/st/bitfield_stm32f746xx.h>
-#endif
+#include <targets/st/bitfield.h>
 
 #define POWER_OFF 1
 #define POWER_ON 3

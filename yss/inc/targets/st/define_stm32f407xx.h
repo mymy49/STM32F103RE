@@ -23,8 +23,8 @@
 //
 ////////////////////////////////////////////////////////////////////////////////////////
 
-#ifndef YSS_DEFINE_STM32F446XX__H_
-#define YSS_DEFINE_STM32F446XX__H_
+#ifndef YSS_DEFINE_STM32F407XX__H_
+#define YSS_DEFINE_STM32F407XX__H_
 
 namespace define
 {
