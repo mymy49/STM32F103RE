@@ -33,12 +33,7 @@
 #include <drv/I2s.h>
 #include <yss/thread.h>
 #include <yss/reg.h>
-
-#if defined(STM32F446xx)
-#include <targets/st/bitfield_stm32f446xx.h>
-#elif defined(STM32F429xx)	
-#include <targets/st/bitfield_stm32f429xx.h>
-#endif
+#include <targets/st/bitfield.h>
 
 I2s::I2s(const Drv::Config drvConfig, const Config config) : Drv(drvConfig)
 {

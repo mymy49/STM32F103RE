@@ -29,7 +29,7 @@
 
 #include <drv/Gpio.h>
 #include <yss/reg.h>
-#include <targets/st/bitfield_stm32f103xx.h>
+#include <targets/st/bitfield.h>
 
 inline void setGpioConfig(YSS_GPIO_Peri *port, uint8_t pin, uint8_t val)
 {

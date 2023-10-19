@@ -33,14 +33,7 @@
 #include <yss/thread.h>
 #include <util/runtime.h>
 #include <yss/reg.h>
-
-#if defined(STM32F446xx)
-#include <targets/st/bitfield_stm32f446xx.h>
-#elif defined(STM32F429xx)
-#include <targets/st/bitfield_stm32f429xx.h>
-#elif defined(GD32F1) || defined(STM32F1_N)
-#include <targets/st/bitfield_stm32f103xx.h>
-#endif
+#include <targets/st/bitfield.h>
 
 #define TRANSMIT	false
 #define RECEIVE		true

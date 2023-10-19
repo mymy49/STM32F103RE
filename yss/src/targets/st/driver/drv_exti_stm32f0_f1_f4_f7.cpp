@@ -30,10 +30,7 @@
 #include <drv/Exti.h>
 #include <yss/thread.h>
 #include <yss/reg.h>
-
-#if defined(STM32F030xC)
-#include <targets/st/stm32f030xc.h>
-#endif
+#include <targets/st/bitfield.h>
 
 Exti::Exti(void (*clockFunc)(bool en), void (*nvicFunc)(bool en)) : Drv(clockFunc, nvicFunc)
 {

@@ -32,12 +32,7 @@
 #include <util/ElapsedTime.h>
 #include <yss/reg.h>
 #include <yss/thread.h>
-
-#if defined(STM32F030xC)
-#include <targets/st/bitfield_stm32f030xx.h>
-#elif defined(GD32F1) || defined (STM32F1_N)
-#include <targets/st/bitfield_stm32f103xx.h>
-#endif
+#include <targets/st/bitfield.h>
 
 #define checkError(sr) (sr & 0x08)
 #define checkComplete(sr) (sr & 0x03)

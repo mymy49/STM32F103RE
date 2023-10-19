@@ -23,24 +23,24 @@
 //
 ////////////////////////////////////////////////////////////////////////////////////////
 
-#include <drv/peripheral.h>
+#ifndef __BITFIELD_STM32_H
+#define __BITFIELD_STM32_H
 
-#if defined(STM32F0_N)
-
-#include <drv/Wdog.h>
-#include <yss.h>
-#include <targets/st/bitfield.h>
-
-Wdog::Wdog(const Drv::Config drvConfig, const Config config) : Drv(drvConfig)
-{
-		
-}
-
-error Wdog::initialize(uint8_t prescale, uint16_t reload)
-{
-
-	return error::ERROR_NONE;
-}
+#if defined(GD32F10X_MD) || defined(STM32F103xE) || defined(STM32F103xB)
+#include <targets/st/bitfield_stm32f103xx.h>
+#elif defined(STM32F030xC)
+#include <targets/st/bitfield_stm32f030xx.h>
+#elif defined(STM32F446xx)
+#include <targets/st/bitfield_stm32f446xx.h>
+#elif defined(STM32F407xx)
+#include <targets/st/bitfield_stm32f407xx.h>
+#elif defined(STM32F429xx)
+#include <targets/st/bitfield_stm32f429xx.h>
+#elif defined(STM32F746xx)
+#include <targets/st/bitfield_stm32f746xx.h>
+#elif defined(STM32F767xx)
+#include <targets/st/bitfield_stm32f767xx.h>
+#endif
 
 #endif
 

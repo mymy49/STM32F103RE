@@ -30,7 +30,7 @@
 #include <drv/peripheral.h>
 #include <drv/Adc.h>
 #include <yss/reg.h>
-#include <targets/st/bitfield_stm32f103xx.h>
+#include <targets/st/bitfield.h>
 
 Adc::Adc(const Drv::Setup drvSetup, const Setup setup) : Drv(drvSetup)
 {

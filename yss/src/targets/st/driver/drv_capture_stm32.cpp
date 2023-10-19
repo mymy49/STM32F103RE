@@ -30,12 +30,7 @@
 #include <drv/peripheral.h>
 #include <drv/Capture.h>
 #include <yss/reg.h>
-
-#if defined(STM32F746xx)
-#include <targets/st/bitfield_stm32f746xx.h>
-#elif defined(GD32F10X_MD)
-#include <targets/st/bitfield_stm32f103xx.h>
-#endif
+#include <targets/st/bitfield.h>
 
 Capture::Capture(const Drv::Setup &drvSetup, const Setup &setup) : Drv(drvSetup)
 {
