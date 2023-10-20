@@ -30,12 +30,7 @@
 #include <config.h>
 #include <yss/instance.h>
 #include <yss/reg.h>
-
-#if defined(STM32F767xx)
-#include <targets/st/bitfield_stm32f767xx.h>
-#elif defined(STM32F746xx)
-#include <targets/st/bitfield_stm32f746xx.h>
-#endif
+#include <targets/st/bitfield.h>
 
 void __WEAK initializeSystem(void)
 {
@@ -79,14 +74,6 @@ void __WEAK initializeSystem(void)
 		saipll::rdiv::DIV7   // uint8_t rDiv
 	);
 
-	//// I2S PLL 설정
-	//clock.enableI2sPll(
-	//	192,                 // uint32_t n
-	//	i2spll::pdiv::DIV4,  // uint8_t pDiv
-	//	i2spll::qdiv::DIV15, // uint8_t qDiv
-	//	i2spll::rdiv::DIV7   // uint8_t rDiv
-	//);
-	
 	// 시스템 클럭 설정
 	flash.setLatency(180000000, 33);
 	clock.setSysclk(
@@ -97,8 +84,6 @@ void __WEAK initializeSystem(void)
 		33                                     // uint8_t vcc
 	);
 
-//	flash.setBank(define::flash::bank::DUAL_BANK);
-	
 	// 명령어 캐쉬 활성화
 	SCB_EnableICache();
 	
