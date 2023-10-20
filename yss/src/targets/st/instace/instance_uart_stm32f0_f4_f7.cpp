@@ -57,7 +57,7 @@
 #define YSS_USART3_6_IRQHandler		USART3_6_IRQHandler
 #endif
 
-#if USART2_ENABLE || USART3_ENABLE || USART4_ENABLE || UART4_ENABLE || USART5_ENABLE || UART5_ENABLE
+#if USART2_ENABLE || USART3_ENABLE || USART4_ENABLE || UART4_ENABLE || USART5_ENABLE || UART5_ENABLE || UART7_ENABLE || UART8_ENABLE
 static uint32_t getApb1ClockFrequency(void)
 {
 	return clock.getApb1ClockFrequency();

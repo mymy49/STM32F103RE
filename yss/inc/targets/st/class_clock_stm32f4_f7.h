@@ -54,6 +54,7 @@
 #define I2SPLL_R_USE
 
 #define SAIPLL_USE
+#define SAIPLL_P_USE
 #define SAIPLL_Q_USE
 #define SAIPLL_R_USE
 #define GET_SAI1A_FREQ_USE

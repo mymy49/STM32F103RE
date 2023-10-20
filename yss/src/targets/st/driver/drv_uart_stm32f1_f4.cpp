@@ -150,12 +150,21 @@ void Uart::isr(void)
 {
 	uint32_t sr = mDev->SR;
 
-	push(mDev->DR);
-
-	if (sr & (1 << 3))
+	if(sr & (USART_SR_FE_Msk | USART_SR_ORE_Msk | USART_SR_NE_Msk))
 	{
-		flush();
+		if(sr & USART_SR_FE_Msk && mIsrForFrameError)
+			mIsrForFrameError();
+
+		if(sr & USART_SR_ORE_Msk)
+			__NOP();
+
+		mDev->DR;
+		mDev->SR = USART_SR_FE_Msk | USART_SR_ORE_Msk | USART_SR_NE_Msk;
 	}
+	else if(mIsrForRxData)
+		mIsrForRxData(mDev->DR);
+	else
+		push(mDev->DR);
 }
 
 #endif
