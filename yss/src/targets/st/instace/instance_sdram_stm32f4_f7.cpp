@@ -26,13 +26,13 @@
 #include <yss/instance.h>
 #include <config.h>
 
-#if defined(STM32F4_N) || defined(STM32F7_N)
+#if defined(STM32F4) || defined(STM32F7)
 
 #if defined(FMC_Bank5_6)
 
-#include <targets/st_gigadevice/rcc_stm32_gd32f4_f7.h>
+#include <targets/st/bitfield.h>
 
-#if defined(SDRAM_ENABLE)
+#if SDRAM_ENABLE
 static void enableClock(bool en)
 {
 	clock.lock();
@@ -40,7 +40,7 @@ static void enableClock(bool en)
 	clock.unlock();
 }
 
-static const Drv::Config gDrvConfig
+static const Drv::Setup_t gDrvConfig
 {
 	enableClock,		//void (*clockFunc)(bool en);
 	0,					//void (*nvicFunc)(bool en);

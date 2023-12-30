@@ -25,7 +25,7 @@
 
 #include <drv/mcu.h>
 
-#if defined(STM32F4_N) && defined(SAI1)
+#if defined(STM32F4) && defined(SAI1)
 
 #include <yss/debug.h>
 #include <stdint.h>
@@ -40,7 +40,7 @@
 #define SUB_TRANSMITTER		2
 #define SUB_RECEIVER		3
 
-Sai::Sai(const Drv::Config drvConfig, const Config config) : Drv(drvConfig)
+Sai::Sai(const Drv::Setup_t drvConfig, const Config config) : Drv(drvConfig)
 {
 	mPeri = config.peri;
 	mBlock = config.block;

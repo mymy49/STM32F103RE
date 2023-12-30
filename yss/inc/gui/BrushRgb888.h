@@ -32,20 +32,19 @@
 
 class BrushRgb888 : public Brush
 {
-protected:
-	uint32_t mFontColorTable[16];
-
 public:
 	BrushRgb888(void);
 
 	~BrushRgb888(void);
 
-	virtual uint8_t drawChar(Position_t pos, uint32_t utf8);
-
 	// Brush
-	void updateFontColor(void);
+	virtual void drawDot(int16_t x, int16_t y);
+	
+	virtual void drawDot(int16_t x, int16_t y, Color color);
 
-	virtual void drawDot(int16_t x, int16_t y, uint32_t color) = 0;
+	virtual void drawDot(int16_t x, int16_t y, uint32_t color);
+
+	virtual void fillRectBase(Position_t pos, Size_t size, uint32_t color);
 };
 
 #endif

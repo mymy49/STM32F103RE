@@ -25,14 +25,14 @@
 
 #include <drv/peripheral.h>
 
-#if defined(STM32F4_N) || defined(STM32F7_N)
+#if defined(STM32F4) || defined(STM32F7)
 
 #include <drv/peripheral.h>
 #include <drv/Qencoder.h>
 #include <yss/reg.h>
 #include <targets/st/bitfield.h>
 
-Qencoder::Qencoder(const Drv::Setup &drvSetup, const Setup &setup) : Drv(drvSetup)
+Qencoder::Qencoder(const Drv::Setup_t &drvSetup, const Setup_t &setup) : Drv(drvSetup)
 {
 	mPeri = setup.peri;
 }

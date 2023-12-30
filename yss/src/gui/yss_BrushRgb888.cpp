@@ -30,96 +30,64 @@
 #include <gui/BrushRgb888.h>
 #include <gui/Bmp888.h>
 
-#define PI (float)3.14159265358979323846
-
 BrushRgb888::BrushRgb888(void)
 {
+	enableMemoryAlloc(false);
+	setColorMode(COLOR_MODE_RGB888);
 }
 
 BrushRgb888::~BrushRgb888(void)
 {
 }
 
-//void BrushRgb888::drawBmp(Position_t pos, const Bmp888 *image)
-//{
-//	uint8_t *fb = (uint8_t *)image->data, *src;
-//	uint16_t width = image->width;
-//	uint16_t height = image->height;
-//	int16_t xs = pos.x, ys = pos.y;
-
-//	if (xs + width > mSize.width)
-//		width = mSize.width - xs;
-//	if (ys + height > mSize.height)
-//		height = mSize.height - ys;
-
-//	width += xs;
-//	height += ys;
-
-//	for (int16_t y = ys; y < height; y++)
-//	{
-//		src = fb;
-//		fb += image->width * 3;
-
-//		for (int16_t x = xs; x < width; x++)
-//		{
-//			drawDot(x, y, *(uint32_t*)src);
-//			src += 3;
-//		}
-//	}
-//}
-
-//void BrushRgb888::drawBmp(Position_t pos, const Bmp888 &image)
-//{
-//	drawBmp(pos, &image);
-//}
-
-uint8_t BrushRgb888::drawChar(Position_t pos, uint32_t utf8)
+void BrushRgb888::drawDot(int16_t x, int16_t y)
 {
-	if (mFont.setChar(utf8))
-		return 0;
+	uint8_t *des = (uint8_t *)mFrameBuffer, *src = (uint8_t *)&mBrushColorCode;
 
-	YssFontInfo *fontInfo = mFont.getFontInfo();
-	uint8_t *fontFb = mFont.getFrameBuffer(), color;
-	int32_t  index = 0;
-	uint16_t width = fontInfo->width, height = fontInfo->height, offset = 0;
-	int16_t xs = pos.x, ys = pos.y + (int8_t)fontInfo->ypos;
-
-	if (xs + width > mSize.width)
-	{
-		width = mSize.width - xs;
-		offset = fontInfo->width - width;
-	}
-	if (ys + height > mSize.height)
-		height = mSize.height - ys;
-
-	width += xs;
-	height += ys;
-
-	for (int32_t  y = ys; y < height; y++)
-	{
-		for (int32_t  x = xs; x < width; x++, index++)
-		{
-			if (index % 2 == 0)
-			{
-				color = fontFb[index / 2] & 0x0f;
-				drawDot(x, y, mFontColorTable[color]);
-			}
-			else
-			{
-				color = (fontFb[index / 2] >> 4) & 0x0f;
-				drawDot(x, y, mFontColorTable[color]);
-			}
-		}
-		index += offset;
-	}
-
-	return fontInfo->width;
+	des += (mSize.width * y + x) * 3;
+	*des++ = *src++;
+	*des++ = *src++;
+	*des++ = *src++;
 }
 
-void BrushRgb888::updateFontColor(void)
+void BrushRgb888::drawDot(int16_t x, int16_t y, Color color)
 {
-	for(uint8_t i=0;i<16;i++)
-		mFontColorTable[i] = mFontColor.calculateFontColorLevel(mFontBgColor, i).getRgb888Code();
+	uint32_t code = color.getRgb888Code();
+	uint8_t *des = (uint8_t *)mFrameBuffer, *src = (uint8_t *)&code;
+
+	des += (mSize.width * y + x) * 3;
+	*des++ = *src++;
+	*des++ = *src++;
+	*des++ = *src++;
+}
+
+void BrushRgb888::drawDot(int16_t x, int16_t y, uint32_t color)
+{
+	uint8_t *des = &((uint8_t*)mFrameBuffer)[(y * mSize.width + x) * 3];
+	uint8_t *src = (uint8_t*)&color;
+	*des++ = *src++;
+	*des++ = *src++;
+	*des++ = *src++;
+}
+
+void BrushRgb888::fillRectBase(Position_t pos, Size_t size, uint32_t color)
+{
+	int16_t sx = pos.x, ex = pos.x + size.width - 1, sy = pos.y, ey = pos.y + size.height - 1;
+	uint32_t offset;
+	uint8_t *des = (uint8_t*)mFrameBuffer;
+
+	if (ey > mSize.height - 1)
+		ey = mSize.height - 1;
+	if (ex > mSize.width - 1)
+		ex = mSize.width - 1;
+
+	des += sx * 3 + sy * mSize.width * 3;
+	offset = mSize.width * 3;
+	for (int16_t y = sy; y <= ey; y++)
+	{
+		copyRgb888DotPattern(des, color, size.width);
+		des += offset;
+	}
 }
 
 #endif

@@ -29,7 +29,6 @@
 
 #include <yss/instance.h>
 #include <yss/gui.h>
-#include <gui/painter.h>
 #include <yss.h>
 #include <sac/TftLcdDriver.h>
 /*

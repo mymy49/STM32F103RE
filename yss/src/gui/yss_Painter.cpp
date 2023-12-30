@@ -37,7 +37,7 @@ void Painter::updateFontColor(void)
 	mFontColorCode = mFontColor.getRgb888Code();
 }
 
-void Painter::drawBitmap(Position_t pos, const Bitmap_t &bitmap)
+void Painter::drawBitmapBase(Position_t pos, const Bitmap_t &bitmap)
 {
 	using namespace define::dma2d;
 
@@ -142,7 +142,7 @@ void Painter::drawBitmap(Position_t pos, const Bitmap_t &bitmap)
 	dma2d.unlock();
 }
 
-void Painter::drawBitmapFile(Position_t pos, const BitmapFile_t &bitmap)
+void Painter::drawBitmapFileBase(Position_t pos, const BitmapFile_t &bitmap)
 {
 	using namespace define::dma2d;
 
@@ -247,7 +247,7 @@ void Painter::drawBitmapFile(Position_t pos, const BitmapFile_t &bitmap)
 	dma2d.unlock();
 }
 
-void Painter::fillRect(Position_t pos, Size_t size, uint32_t color)
+void Painter::fillRectBase(Position_t pos, Size_t size, uint32_t color)
 {
 	using namespace define::dma2d;
 	int16_t offset;

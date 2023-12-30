@@ -43,7 +43,7 @@ Argb1555::~Argb1555(void)
 void Argb1555::drawDot(int16_t x, int16_t y)
 {
 	uint16_t *des = (uint16_t*)mFrameBuffer;
-	des[mSize.width * y + x] = (uint16_t)mBrushColor;
+	des[mSize.width * y + x] = (uint16_t)mBrushColorCode;
 }
 
 void Argb1555::drawDot(int16_t x, int16_t y, Color color)

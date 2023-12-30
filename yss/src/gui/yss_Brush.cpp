@@ -40,10 +40,10 @@ Brush::Brush(void)
 	mSize.height = 0;
 	mSize.width = 0;
 	
-	mBrushColor = 0x00;
+	mBrushColorCode = 0x00;
 	mFontColor.setToBlack();
-	mFontBgColor.setToWhite();
-	mBgColor = 0xFFFFFFFF;
+	mBgColor.setToWhite();
+	mBgColorCode = 0xFFFFFFFF;
 	updateFontColor();
 }
 
@@ -56,30 +56,30 @@ void Brush::translateFromPositionToSize(Position_t &desPos, Size_t &desSize, Pos
 {
 	if(srcPos1.x > srcPos2.x)
 	{
-		desSize.width = srcPos1.x - srcPos2.x;
+		desSize.width = srcPos1.x - srcPos2.x + 1;
 		desPos.x = srcPos2.x;
 	}
 	else
 	{
-		desSize.width = srcPos2.x - srcPos1.x;
+		desSize.width = srcPos2.x - srcPos1.x + 1;
 		desPos.x = srcPos1.x;
 	}
 
 	if(srcPos1.y > srcPos2.y)
 	{
-		desSize.height = srcPos1.y - srcPos2.y;
+		desSize.height = srcPos1.y - srcPos2.y + 1;
 		desPos.y = srcPos2.y;
 	}
 	else
 	{
-		desSize.width = srcPos2.x - srcPos1.x;
-		desPos.x = srcPos1.x;
+		desSize.height = srcPos2.y - srcPos1.y + 1;
+		desPos.y = srcPos1.y;
 	}	
 }
 
 void Brush::eraseDot(Position_t pos)
 {
-	drawDot(pos.x, pos.y, mBgColor);
+	drawDot(pos.x, pos.y, mBgColorCode);
 }
 
 void Brush::setBrushColor(Color color)
@@ -87,15 +87,15 @@ void Brush::setBrushColor(Color color)
 	switch(mColorMode)
 	{
 	case COLOR_MODE_RGB565 :
-		mBrushColor = color.getRgb565Code();
+		mBrushColorCode = color.getRgb565Code();
 		break;
 
 	case COLOR_MODE_RGB888 :
-		mBrushColor = color.getRgb888Code();
+		mBrushColorCode = color.getRgb888Code();
 		break;
 
 	case COLOR_MODE_ARGB1555 :
-		mBrushColor = color.getArgb1555Code();
+		mBrushColorCode = color.getArgb1555Code();
 		break;
 	}
 }
@@ -108,18 +108,20 @@ void Brush::setFontColor(Color color)
 
 void Brush::setBackgroundColor(Color color)
 {
+	mBgColor.setColor(color);
+
 	switch(mColorMode)
 	{
 	case COLOR_MODE_RGB565 :
-		mBgColor = color.getRgb565Code();
+		mBgColorCode = color.getRgb565Code();
 		break;
 
 	case COLOR_MODE_RGB888 :
-		mBgColor = color.getRgb888Code();
+		mBgColorCode = color.getRgb888Code();
 		break;
 
 	case COLOR_MODE_ARGB1555 :
-		mBgColor = color.getArgb1555Code();
+		mBgColorCode = color.getArgb1555Code();
 		break;
 	}
 
@@ -133,15 +135,15 @@ void Brush::setBrushColor(uint8_t red, uint8_t green, uint8_t blue, uint8_t alph
 	switch(mColorMode)
 	{
 	case COLOR_MODE_RGB565 :
-		mBrushColor = color.getRgb565Code();
+		mBrushColorCode = color.getRgb565Code();
 		break;
 
 	case COLOR_MODE_RGB888 :
-		mBrushColor = color.getRgb888Code();
+		mBrushColorCode = color.getRgb888Code();
 		break;
 
 	case COLOR_MODE_ARGB1555 :
-		mBrushColor = color.getArgb1555Code();
+		mBrushColorCode = color.getArgb1555Code();
 		break;
 	}
 }
@@ -154,20 +156,20 @@ void Brush::setFontColor(uint8_t red, uint8_t green, uint8_t blue, uint8_t alpha
 
 void Brush::setBackgroundColor(uint8_t red, uint8_t green, uint8_t blue, uint8_t alpha)
 {
-	mFontBgColor.setColor(red, green, blue, alpha);
+	mBgColor.setColor(red, green, blue, alpha);
 
 	switch(mColorMode)
 	{
 	case COLOR_MODE_RGB565 :
-		mBgColor = mFontBgColor.getRgb565Code();
+		mBgColorCode = mBgColor.getRgb565Code();
 		break;
 
 	case COLOR_MODE_RGB888 :
-		mBgColor = mFontBgColor.getRgb888Code();
+		mBgColorCode = mBgColor.getRgb888Code();
 		break;
 
 	case COLOR_MODE_ARGB1555 :
-		mBgColor = mFontBgColor.getArgb1555Code();
+		mBgColorCode = mBgColor.getArgb1555Code();
 		break;
 	}
 
@@ -464,14 +466,14 @@ void Brush::fillCircle(Position_t pos, uint16_t radius)
 		y = pos.y + i + 1;
 		if(y < mSize.height)
 		{
-			for(uint32_t x=sx;x<=ex;x++)
+			for(int32_t x=sx;x<=ex;x++)
 				drawDot(x, y);
 		}
 		
 		y = pos.y - i;
 		if(y >= 0)
 		{
-			for(uint32_t x=sx;x<=ex;x++)
+			for(int32_t x=sx;x<=ex;x++)
 				drawDot(x, y);
 		}
 	}
@@ -480,7 +482,7 @@ void Brush::fillCircle(Position_t pos, uint16_t radius)
 void Brush::fillTriangle(Position_t top, Position_t left, Position_t right)
 {
 	float slope1, slope2;
-	int16_t sx, ex, ey, buf, cy;
+	int16_t sx, ex, ey, buf, cy = 0;
 	bool nextDrawFlag = false;
 	Position_t p;
 	
@@ -596,7 +598,7 @@ void Brush::fillTriangle(Position_t top, Position_t left, Position_t right)
 	}
 }
 
-void Brush::fillRect(Position_t pos, Size_t size, uint32_t color)
+void Brush::fillRectBase(Position_t pos, Size_t size, uint32_t color)
 {
 	int16_t sx = pos.x, ex = pos.x + size.width - 1, sy = pos.y, ey = pos.y + size.height - 1;
 	
@@ -612,12 +614,17 @@ void Brush::fillRect(Position_t pos, Size_t size, uint32_t color)
 	}
 }
 
+void Brush::fillRect(Position_t pos, Size_t size, uint32_t color)
+{
+	fillRectBase(pos, size, color);
+}
+
 void Brush::fillRect(Position_t pos, Size_t size, Color color)
 {
 	switch(mColorMode)
 	{
 	case COLOR_MODE_RGB888 :
-		fillRect(pos, size, color.getRgb888Code());
+		fillRectBase(pos, size, color.getRgb888Code());
 		break;
 	
 	default :
@@ -632,12 +639,12 @@ void Brush::fillRect(Position_t p1, Position_t p2)
 
 	translateFromPositionToSize(pos, size, p1, p2);
 
-	fillRect(pos, size, mBrushColor);
+	fillRectBase(pos, size, mBrushColorCode);
 }
 
 void Brush::fillRect(Position_t pos, Size_t size)
 {
-	fillRect(pos, size, mBrushColor);
+	fillRectBase(pos, size, mBrushColorCode);
 }
 
 void Brush::eraseRectangle(Position_t p1, Position_t p2)
@@ -647,17 +654,17 @@ void Brush::eraseRectangle(Position_t p1, Position_t p2)
 
 	translateFromPositionToSize(pos, size, p1, p2);
 
-	fillRect(pos, size, mBgColor);
+	fillRectBase(pos, size, mBgColorCode);
 }
 
 void Brush::eraseRectangle(Position_t pos, Size_t size)
 {
-	fillRect(pos, size, mBgColor);
+	fillRectBase(pos, size, mBgColorCode);
 }
 
 void Brush::fill(void)
 {
-	fillRect(Position_t{0, 0}, mSize);
+	fillRectBase(Position_t{0, 0}, mSize, mBrushColorCode);
 }
 
 void Brush::clear(void)
@@ -665,28 +672,38 @@ void Brush::clear(void)
 	eraseRectangle(Position_t{0, 0}, mSize);
 }
 
-void Brush::drawBitmap(Position_t pos, const Bitmap_t &bitmap)
+void Brush::drawBitmapBase(Position_t pos, const Bitmap_t &bitmap)
 {
 #warning "내용 작성이 필요함"
 	(void)pos;
 	(void)bitmap;
+}
+
+void Brush::drawBitmap(Position_t pos, const Bitmap_t &bitmap)
+{
+	drawBitmapBase(pos, bitmap);
 }
 
 void Brush::drawBitmap(Position_t pos, const Bitmap_t *bitmap)
 {
-	drawBitmap(pos, *bitmap);
+	drawBitmapBase(pos, *bitmap);
 }
 
-void Brush::drawBitmapFile(Position_t pos, const BitmapFile_t &bitmap)
+void Brush::drawBitmapFileBase(Position_t pos, const BitmapFile_t &bitmap)
 {
 #warning "내용 작성이 필요함"
 	(void)pos;
 	(void)bitmap;
 }
 
+void Brush::drawBitmapFile(Position_t pos, const BitmapFile_t &bitmap)
+{
+	drawBitmapFileBase(pos, bitmap);
+}
+
 void Brush::drawBitmapFile(Position_t pos, const BitmapFile_t *bitmap)
 {
-	drawBitmapFile(pos, *bitmap);
+	drawBitmapFileBase(pos, *bitmap);
 }
 
 uint8_t Brush::drawChar(Position_t pos, uint32_t utf8)
@@ -718,12 +735,12 @@ uint8_t Brush::drawChar(Position_t pos, uint32_t utf8)
 			if (index % 2 == 0)
 			{
 				color = fontFb[index / 2] & 0x0f;
-				drawDot(x, y, mFontColorTable[color]);
+				drawDot(x, y, mFontColorCodeTable[color]);
 			}
 			else
 			{
 				color = (fontFb[index / 2] >> 4) & 0x0f;
-				drawDot(x, y, mFontColorTable[color]);
+				drawDot(x, y, mFontColorCodeTable[color]);
 			}
 		}
 		index += offset;
@@ -738,15 +755,15 @@ void Brush::updateFontColor(void)
 	{
 	case COLOR_MODE_RGB888 :
 		for(uint8_t i=0;i<16;i++)
-			mFontColorTable[i] = mFontColor.calculateFontColorLevel(mFontBgColor, i).getRgb888Code();
+			mFontColorCodeTable[i] = mFontColor.calculateFontColorLevel(mBgColor, i).getRgb888Code();
 		break;
 	case COLOR_MODE_RGB565 :
 		for(uint8_t i=0;i<16;i++)
-			mFontColorTable[i] = mFontColor.calculateFontColorLevel(mFontBgColor, i).getRgb565Code();
+			mFontColorCodeTable[i] = mFontColor.calculateFontColorLevel(mBgColor, i).getRgb565Code();
 		break;
 	case COLOR_MODE_ARGB1555 :
 		for(uint8_t i=0;i<16;i++)
-			mFontColorTable[i] = mFontColor.calculateFontColorLevel(mFontBgColor, i).getArgb1555Code();
+			mFontColorCodeTable[i] = mFontColor.calculateFontColorLevel(mBgColor, i).getArgb1555Code();
 		break;
 	}
 }

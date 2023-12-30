@@ -25,7 +25,7 @@
 
 #include <drv/mcu.h>
 
-#if defined(STM32F4_N) || defined(STM32F7_N)
+#if defined(STM32F4) || defined(STM32F7)
 
 #include <yss/instance.h>
 #include <config.h>
@@ -64,7 +64,7 @@ static void resetSai1(void)
 	clock.unlock();
 }
 
-static const Drv::Config gDrvSai1Config
+static const Drv::Setup_t gDrvSai1Config
 {
 	enableSai1Clock,		// void (*clockFunc)(bool en);
 	enableSai1Interrupt,	// void (*nvicFunc)(bool en);

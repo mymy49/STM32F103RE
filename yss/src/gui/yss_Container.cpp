@@ -31,7 +31,6 @@
 #include <config.h>
 #include <yss/gui.h>
 #include <std_ext/malloc.h>
-#include <gui/painter.h>
 
 #if YSS_GUI_FRAME_BUFFER == 0	// Rgb565
 	typedef Rgb565		SysFrameBuffer;
@@ -152,8 +151,8 @@ void Container::update(Position_t pos, Size_t size)
 	for (uint16_t i = 0; i < mNumOfObj; i++)
 	{
 		obj = mObjArr[i];
-		//if (obj->isVisible())
-		//	Painter::drawArea(*this, pos, size, *obj);
+		if (obj->isVisible())
+			mFrameBuffer->drawObjectToPartialArea(pos, size, obj);
 	}
 
 	if (mParent)
@@ -176,8 +175,8 @@ void Container::update(Position_t beforePos, Size_t beforeSize, Position_t curre
 		obj = mObjArr[i];
 		if (obj->isVisible())
 		{
-//			Painter::drawArea(*this, beforePos, beforeSize, *obj);
-//			Painter::drawArea(*this, currentPos, currentSize, *obj);
+			mFrameBuffer->drawObjectToPartialArea(beforePos, beforeSize, obj);
+			mFrameBuffer->drawObjectToPartialArea(currentPos, currentSize, obj);
 		}
 	}
 

@@ -25,7 +25,7 @@
 
 #include <drv/mcu.h>
 
-#if defined(GD32F1) || defined(STM32F1_N)
+#if defined(GD32F1) || defined(STM32F1)
 
 #include <drv/peripheral.h>
 #include <drv/Clock.h>
@@ -85,8 +85,6 @@ static const int16_t gHpreDiv[16] = {1, 1, 1, 1, 1, 1, 1, 1, 2, 4, 8, 16, 64, 12
 
 bool Clock::enableHse(uint32_t hseHz, bool useOsc)
 {
-	volatile uint32_t* peri = (volatile uint32_t*)RCC;
-	
 	gHseFreq = hseHz;
 
 	if (hseHz < HSE_MIN_FREQ && HSE_MAX_FREQ < hseHz)
@@ -264,9 +262,8 @@ uint32_t Clock::getMainPllFrequency(void)
 
 uint32_t Clock::getSystemClockFrequency(void)
 {
-	uint32_t clk;
-
 	using namespace define::clock::sysclk;
+
 	switch((RCC->CFGR & RCC_CFGR_SWS_Msk) >> RCC_CFGR_SWS_Pos)
 	{
 	case src::HSI :
@@ -308,36 +305,32 @@ uint32_t Clock::getApb2ClockFrequency(void)
 
 void Clock::enableAhb1Clock(uint32_t position, bool en)
 {
-	volatile uint32_t* peri = (volatile uint32_t*)RCC;
 	setBitData(RCC->AHBENR, en, position);
 }
 
 void Clock::enableApb1Clock(uint32_t position, bool en)
 {
-	volatile uint32_t* peri = (volatile uint32_t*)RCC;
 	setBitData(RCC->APB1ENR, en, position);
 }
 
 void Clock::enableApb2Clock(uint32_t position, bool en)
 {
-	volatile uint32_t* peri = (volatile uint32_t*)RCC;
 	setBitData(RCC->APB2ENR, en, position);
 }
 
 void Clock::resetAhb1(uint32_t position)
 {
+	(void)position;
 }
 
 void Clock::resetApb1(uint32_t position)
 {
-	volatile uint32_t* peri = (volatile uint32_t*)RCC;
 	setBitData(RCC->APB1RSTR, true, position);
 	setBitData(RCC->APB1RSTR, false, position);
 }
 
 void Clock::resetApb2(uint32_t position)
 {
-	volatile uint32_t* peri = (volatile uint32_t*)RCC;
 	setBitData(RCC->APB2RSTR, true, position);
 	setBitData(RCC->APB2RSTR, false, position);
 }

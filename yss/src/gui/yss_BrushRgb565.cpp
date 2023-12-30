@@ -29,96 +29,80 @@
 
 #include <gui/BrushRgb565.h>
 #include <gui/Bmp565.h>
+#include <std_ext/string.h>
+#include <yss.h>
 
 #define PI (float)3.14159265358979323846
 
 BrushRgb565::BrushRgb565(void)
 {
+	enableMemoryAlloc(false);
+	setColorMode(COLOR_MODE_RGB565);
 }
 
 BrushRgb565::~BrushRgb565(void)
 {
 }
-/*
-void BrushRgb565::drawBmp(Position_t pos, const Bmp565 *image)
+
+void BrushRgb565::drawDot(int16_t x, int16_t y)
 {
-	uint16_t *fb = (uint16_t *)image->data, *src;
-	uint16_t width = image->width;
-	uint16_t height = image->height;
-	int16_t xs = pos.x, ys = pos.y;
+	uint16_t *des = (uint16_t *)mFrameBuffer, *src = (uint16_t *)&mBrushColorCode;
 
-	if (xs + width > mSize.width)
-		width = mSize.width - xs;
-	if (ys + height > mSize.height)
-		height = mSize.height - ys;
+	des[mSize.width * y + x] = *src;
+} 
 
-	width += xs;
-	height += ys;
+void BrushRgb565::drawDot(int16_t x, int16_t y, Color color)
+{
+	uint16_t code = color.getRgb565Code();
+	uint16_t *des = (uint16_t *)mFrameBuffer;
 
-	for (int16_t y = ys; y < height; y++)
+	des[mSize.width * y + x] = code;
+}
+
+void BrushRgb565::drawDot(int16_t x, int16_t y, uint32_t color)
+{
+	uint16_t *des = (uint16_t *)mFrameBuffer;
+
+	des[mSize.width * y + x] = (uint16_t)color;
+}
+
+void BrushRgb565::fillRectBase(Position_t pos, Size_t size, uint32_t color)
+{
+	if(mSize.width == size.width)
 	{
-		src = fb;
-		fb += image->width;
+		uint16_t *des = (uint16_t*)mFrameBuffer;
+		des += pos.y * mSize.width;
 
-		for (int16_t x = xs; x < width; x++)
+#if defined(YSS_MEMDMA_SUPPORT)
+		memsetd(des, (uint16_t)color, size.width * size.height);
+#else
+		memsethw(des, color, size.width * size.height * 2);
+#endif
+	}
+	else
+	{
+		int16_t sx = pos.x, ex = pos.x + size.width - 1, sy = pos.y, ey = pos.y + size.height - 1;
+		uint32_t offset;
+		uint16_t *des = (uint16_t*)mFrameBuffer;
+
+		if (ey > mSize.height - 1)
+			ey = mSize.height - 1;
+		if (ex > mSize.width - 1)
+			ex = mSize.width - 1;
+
+		des += sx + sy * mSize.width;
+		offset = mSize.width;
+
+		for (int16_t y = sy; y <= ey; y++)
 		{
-			drawDot(x, y, *src++);
+#if defined(YSS_MEMDMA_SUPPORT)
+			memsetd(des, (uint16_t)color, size.width);
+#else
+			memsethw(des, color, size.width * 2);
+#endif
+			des += offset;
 		}
 	}
-}
-
-void BrushRgb565::drawBmp(Position_t pos, const Bmp565 &image)
-{
-	drawBmp(pos, &image);
-}
-*/
-uint8_t BrushRgb565::drawChar(Position_t pos, uint32_t utf8)
-{
-	if (mFont.setChar(utf8))
-		return 0;
-
-	YssFontInfo *fontInfo = mFont.getFontInfo();
-	uint8_t *fontFb = mFont.getFrameBuffer(), color;
-	int32_t  index = 0;
-	uint16_t width = fontInfo->width, height = fontInfo->height, offset = 0;
-	int16_t xs = pos.x, ys = pos.y + (int8_t)fontInfo->ypos;
-
-	if (xs + width > mSize.width)
-	{
-		width = mSize.width - xs;
-		offset = fontInfo->width - width;
-	}
-	if (ys + height > mSize.height)
-		height = mSize.height - ys;
-
-	width += xs;
-	height += ys;
-
-	for (int32_t  y = ys; y < height; y++)
-	{
-		for (int32_t  x = xs; x < width; x++, index++)
-		{
-			if (index % 2 == 0)
-			{
-				color = fontFb[index / 2] & 0x0f;
-				drawDot(x, y, mFontColorTable[color]);
-			}
-			else
-			{
-				color = (fontFb[index / 2] >> 4) & 0x0f;
-				drawDot(x, y, mFontColorTable[color]);
-			}
-		}
-		index += offset;
-	}
-
-	return fontInfo->width;
-}
-
-void BrushRgb565::updateFontColor(void)
-{
-	for(uint8_t i=0;i<16;i++)
-		mFontColorTable[i] = mFontColor.calculateFontColorLevel(mFontBgColor, i).getRgb565Code();
 }
 
 #endif

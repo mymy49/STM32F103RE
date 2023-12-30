@@ -25,13 +25,13 @@
 
 #include <drv/peripheral.h>
 
-#if defined(DMA2D) && (defined(STM32F7_N) || defined(STM32F4_N))
+#if defined(DMA2D) && (defined(STM32F7) || defined(STM32F4))
 
 #include <drv/Dma2d.h>
 #include <yss/thread.h>
 #include <targets/st/bitfield.h>
 
-Dma2d::Dma2d(const Drv::Config drvConfig, const Config config) : Drv(drvConfig)
+Dma2d::Dma2d(const Drv::Setup_t drvConfig, const Setup_t config) : Drv(drvConfig)
 {
 	mPeri = (YSS_DMA2D_Peri*)config.peri;
 }

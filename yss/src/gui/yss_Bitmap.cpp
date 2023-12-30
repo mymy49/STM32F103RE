@@ -28,7 +28,6 @@
 #if USE_GUI && YSS_L_HEAP_USE
 
 #include <gui/Bitmap.h>
-#include <gui/painter.h>
 #include <gui/Brush.h>
 
 Bitmap::Bitmap(void)

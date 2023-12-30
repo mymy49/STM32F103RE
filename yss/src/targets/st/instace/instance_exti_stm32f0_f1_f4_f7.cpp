@@ -25,41 +25,16 @@
 
 #include <drv/mcu.h>
 
-#if defined(STM32F4_N) || defined(STM32F7_N) || defined (GD32F1) || defined(STM32F0_N)
+#if defined(STM32F4) || defined(STM32F7) || defined (GD32F1) || defined(STM32F0) || defined(STM32F1)
 
-#if defined(STM32F446xx)
-#include <targets/st_gigadevice/exti_stm32_gd32f1_f4_f7.h>
-#elif defined(STM32F429xx)
-#include <targets/st/bitfield_stm32f429xx.h>
-#elif defined(STM32F767xx)
-#include <targets/st/bitfield_stm32f767xx.h>
-#elif defined(GD32F1)
-#include <targets/st/bitfield_stm32f103xx.h>
-#elif defined(STM32F0_N)
-#include <targets/st/bitfield_stm32f030xx.h>
-#endif
-
+#include <targets/st/bitfield.h>
 #include <drv/Exti.h>
 #include <yss/instance.h>
-
-#if defined(GD32F1)
-#if defined(__SEGGER_LINKER)
-
-#else
-
-#endif
-#elif defined(STM32F4) || defined(STM32F7)
-
-#elif defined(GD32F4)
-#define EXTI15_10_IRQHandler	EXTI10_15_IRQHandler
-#define EXTI9_5_IRQHandler		EXTI5_9_IRQHandler
-#endif
-
 
 static void enableInterrupt(bool en)
 {
 	nvic.lock();
-#if defined(STM32F0_N)
+#if defined(STM32F0)
 	nvic.enableInterrupt(EXTI0_1_IRQn, en);
 	nvic.enableInterrupt(EXTI2_3_IRQn, en);
 	nvic.enableInterrupt(EXTI4_15_IRQn, en);
@@ -79,7 +54,7 @@ Exti exti(0, enableInterrupt);
 
 extern "C"
 {
-#if defined(STM32F0_N)
+#if defined(STM32F0)
 	void EXTI0_1_IRQHandler(void)
 	{
 		uint32_t imr = EXTI->IMR;

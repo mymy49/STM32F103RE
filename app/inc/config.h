@@ -66,7 +66,6 @@
 
 // CAN 활성화
 #define CAN1_ENABLE			false
-#define CAN2_ENABLE			false
 
 // CRC32 활성화
 #define CRC32_ENABLE		false
@@ -77,10 +76,8 @@
 // I2C 활성화
 #define I2C1_ENABLE			false
 #define I2C2_ENABLE			false
-#define I2C3_ENABLE			false
 
 // I2S 활성화
-#define I2S1_ENABLE			false
 #define I2S2_ENABLE			false
 #define I2S3_ENABLE			false
 
@@ -91,30 +88,11 @@
 #define PWM4_ENABLE			false
 #define PWM5_ENABLE			false
 #define PWM8_ENABLE			false
-#define PWM9_ENABLE			false
-#define PWM10_ENABLE		false
-#define PWM11_ENABLE		false
-#define PWM12_ENABLE		false
-#define PWM13_ENABLE		false
-#define PWM14_ENABLE		false
-
-// QENCODER 활성화
-#define QENCODER1_ENABLE	false
-#define QENCODER2_ENABLE	false
-#define QENCODER3_ENABLE	false
-#define QENCODER4_ENABLE	false
-#define QENCODER5_ENABLE	false
-#define QENCODER8_ENABLE	false
-
-// SAI 활성화
-#define SAI1_ENABLE			false
-#define SAI2_ENABLE			false
 
 // SPI 활성화
 #define SPI1_ENABLE			false
 #define SPI2_ENABLE			false
 #define SPI3_ENABLE			false
-#define SPI4_ENABLE			false
 
 // TIMER 활성화
 #define TIM1_ENABLE			false
@@ -125,12 +103,6 @@
 #define TIM6_ENABLE			true
 #define TIM7_ENABLE			false
 #define TIM8_ENABLE			false
-#define TIM9_ENABLE			false
-#define TIM10_ENABLE		false
-#define TIM11_ENABLE		false
-#define TIM12_ENABLE		false
-#define TIM13_ENABLE		false
-#define TIM14_ENABLE		false
 
 // UART 활성화
 #define USART1_ENABLE		false
@@ -138,7 +110,6 @@
 #define USART3_ENABLE		false
 #define UART4_ENABLE		false
 #define UART5_ENABLE		false
-#define USART6_ENABLE		false
 
 #endif
 

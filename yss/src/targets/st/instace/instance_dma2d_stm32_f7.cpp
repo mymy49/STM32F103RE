@@ -26,15 +26,11 @@
 #include <yss/instance.h>
 #include <config.h>
 
-#if defined(STM32F7_N) || defined(STM32F4_N)
+#if defined(STM32F7) || defined(STM32F4)
 
 #if defined(DMA2D) && defined(DMA2D_ENABLE) && USE_GUI
 
-#if defined(STM32F746xx)
-#include <targets/st/bitfield_stm32f746xx.h>
-#elif defined(STM32F429xx)
-#include <targets/st/bitfield_stm32f429xx.h>
-#endif
+#include <targets/st/bitfield.h>
 
 static void enableClock(bool en)
 {
@@ -57,7 +53,7 @@ static void reset(void)
 	clock.unlock();
 }
 
-static const Drv::Config gDrvConfig
+static const Drv::Setup_t gDrvConfig
 {
 	enableClock,	//void (*clockFunc)(bool en);
 	enableInterrup,	//void (*nvicFunc)(bool en);
@@ -65,7 +61,7 @@ static const Drv::Config gDrvConfig
 	0				//uint32_t (*getClockFunc)(void);
 };
 
-static const Dma2d::Config gConfig
+static const Dma2d::Setup_t gConfig
 {
 	(YSS_DMA2D_Peri*)DMA2D	//YSS_DMA2D_Peri *peri;
 };

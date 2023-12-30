@@ -29,19 +29,7 @@
 #include "peripheral.h"
 #include <stdint.h>
 
-#if false
-
-#include "dma2d/define_dma2d_stm32f4_f7.h"
-
-typedef volatile uint32_t	YSS_DMA2D_Peri;
-
-#elif defined(DMA2D) && (defined(GD32F4) || defined(STM32F4) || defined(STM32F7))
-
-#include <targets/st_gigadevice/define_dma2d_stm32_gd32f4.h>
-
-typedef volatile uint32_t	YSS_DMA2D_Peri;
-
-#elif defined(DMA2D) && (defined(STM32F7_N) || defined(STM32F4_N))
+#if defined(DMA2D) && (defined(STM32F7) || defined(STM32F4))
 
 typedef DMA2D_TypeDef		YSS_DMA2D_Peri;
 
@@ -66,7 +54,7 @@ class Dma2d : public Drv
 
   public:
 	
-	struct Config
+	struct Setup_t
 	{
 		YSS_DMA2D_Peri *peri;
 	};
@@ -120,7 +108,7 @@ class Dma2d : public Drv
 		uint32_t color;
 	};
 
-	Dma2d(const Drv::Config drvConfig, const Config config);
+	Dma2d(const Drv::Setup_t drvSetup, const Setup_t config);
 	Dma2d(YSS_DMA2D_Peri *peri, void (*clockFunc)(bool en), void (*nvicFunc)(bool en));
 	void initialize(void);
 

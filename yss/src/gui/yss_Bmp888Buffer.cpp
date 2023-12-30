@@ -66,126 +66,18 @@ error Bmp888Buffer::setSize(Size_t size)
 	mBmp888.width = size.width;
 	mBmp888.height = size.height;
 	mSize = size;
+
+	return error::ERROR_NONE;
+}
+
+Bitmap_t *Bmp888Buffer::getBitmap(void)
+{
+	return &mBmp888;
 }
 
 uint32_t Bmp888Buffer::getBufferSize(void)
 {
 	return mBufferSize;
-}
-
-void Bmp888Buffer::drawDot(int16_t x, int16_t y)
-{
-	uint32_t offset = y * mSize.width * 3 + x * 3;
-	uint8_t *des = &mFrameBuffer[offset];
-	uint32_t color = mBrushColorCode;
-	uint8_t *src = (uint8_t*)&color;
-	*des++ = *src++;
-	*des++ = *src++;
-	*des++ = *src++;
-}
-
-void Bmp888Buffer::drawDot(int16_t x, int16_t y, Color color)
-{
-	uint8_t *des = &mFrameBuffer[y * mSize.width * 3 + x * 3];
-	uint32_t buf = color.getRgb888Code();
-	uint8_t *src = (uint8_t*)&buf;
-	*des++ = *src++;
-	*des++ = *src++;
-	*des++ = *src++;
-}
-
-void Bmp888Buffer::drawDot(int16_t x, int16_t y, uint32_t color)
-{
-	uint8_t *des = &mFrameBuffer[y * mSize.width * 3 + x * 3];
-	uint8_t *src = (uint8_t*)&color;
-	*des++ = *src++;
-	*des++ = *src++;
-	*des++ = *src++;
-}
-
-void Bmp888Buffer::eraseDot(Position_t pos)
-{
-	uint8_t *des = &mFrameBuffer[pos.y * mSize.width * 3 + pos.x * 3];
-	uint32_t color = mBgColor;
-	uint8_t *src = (uint8_t*)&color;
-	*des++ = *src++;
-	*des++ = *src++;
-	*des++ = *src++;
-}
-
-void Bmp888Buffer::fillRect(Position_t pos, Size_t size)
-{
-	int16_t sx = pos.x, ex = pos.x + size.width - 1, sy = pos.y, ey = pos.y + size.height - 1;
-	uint32_t offset;
-	uint8_t *des = (uint8_t*)mFrameBuffer;
-
-	if (ey > mSize.height - 1)
-		ey = mSize.height - 1;
-	if (ex > mSize.width - 1)
-		ex = mSize.width - 1;
-
-	des += sx * 3 + sy * mSize.width * 3;
-	offset = mSize.width * 3;
-	for (int16_t y = sy; y <= ey; y++)
-	{
-		copyRgb888DotPattern(des, mBrushColorCode, size.width);
-		des += offset;
-	}
-}
-
-void Bmp888Buffer::fillRect(Position_t p1, Position_t p2)
-{
-	int16_t sx, ex, sy, ey;
-	uint8_t *des = mFrameBuffer;
-	uint16_t width;
-
-	if (p1.x < p2.x)
-	{
-		sx = p1.x;
-		ex = p2.x;
-	}
-	else
-	{
-		sx = p2.x;
-		ex = p1.x;
-	}
-
-	if (p1.y < p2.y)
-	{
-		sy = p1.y;
-		ey = p2.y;
-	}
-	else
-	{
-		sy = p2.y;
-		ey = p1.y;
-	}
-
-	if (ey > mSize.height - 1)
-		ey = mSize.height - 1;
-	if (ex > mSize.width - 1)
-		ex = mSize.width - 1;
-
-	des += sx * 3 + sy * mSize.width * 3;
-	width = ex - sx;
-	for (int16_t y = sy; y <= ey; y++)
-	{
-		copyRgb888DotPattern(des, mBrushColorCode, width);
-		des += mSize.width * 3;
-	}
-}
-
-void Bmp888Buffer::clear(void)
-{
-	if (!mOkFlag)
-		return;
-
-	copyRgb888DotPattern(mFrameBuffer, mBgColor, mSize.width * mSize.height);
-}
-
-Bmp888 *Bmp888Buffer::getBmp888(void)
-{
-	return &mBmp888;
 }
 
 void Bmp888Buffer::drawStringToCenterAligned(const char *str)
@@ -200,19 +92,6 @@ void Bmp888Buffer::drawStringToCenterAligned(const char *str)
 	if (pos.y < 0)
 		pos.y = 0;
 	Brush::drawString(pos, str);
-}
-
-void Bmp888Buffer::setBrushColor(Color color)
-{
-	mBrushColor = color.getRgb888Code();
-	mBrushColorCode = color.getRgb888Code();
-}
-
-void Bmp888Buffer::setBrushColor(uint8_t red, uint8_t green, uint8_t blue)
-{
-	Color color(red, green, blue);
-	mBrushColor = color.getRgb888Code();
-	mBrushColorCode = mBrushColor;
 }
 
 #endif

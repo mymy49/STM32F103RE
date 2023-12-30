@@ -28,12 +28,7 @@
 
 #include "mcu.h"
 
-#if defined(STM32F4) || defined(STM32F7)
-
-typedef volatile uint32_t	YSS_SAI_Peri;
-typedef volatile uint32_t	YSS_SAI_Block_Peri;
-
-#elif defined(STM32F4_N) && defined(SAI)
+#if defined(STM32F4) && defined(SAI)
 
 typedef SAI_TypeDef			YSS_SAI_Peri;
 typedef SAI_Block_TypeDef	YSS_SAI_Block_Peri;
@@ -83,7 +78,7 @@ public:
 		STD_PHILIPS = 0,
 	};
 
-	Sai(const Drv::Config drvConfig, const Config config);
+	Sai(const Drv::Setup_t drvConfig, const Config config);
 
 	error initializeI2sReceiverAsSub(const I2sSpecification &spec);
 

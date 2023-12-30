@@ -28,11 +28,7 @@
 
 #include "peripheral.h"
 
-#if defined(STM32F1) || defined(STM32F4) || defined(GD32F4) || defined(STM32F7) || defined(STM32L1) || defined(STM32F0) || defined(STM32G4)
-
-typedef volatile uint32_t	YSS_TIMER_Dev;
-
-#elif defined(NRF52840_XXAA)
+#if defined(NRF52840_XXAA)
 
 typedef NRF_TIMER_Type		YSS_TIMER_Dev;
 
@@ -40,7 +36,7 @@ typedef NRF_TIMER_Type		YSS_TIMER_Dev;
 
 typedef TIMER_TypeDef		YSS_TIMER_Dev;
 
-#elif defined(STM32F4_N) || defined(STM32F7_N) || defined(STM32F0_N) || defined(GD32F1) || defined(STM32F1_N)
+#elif defined(STM32F4) || defined(STM32F7) || defined(STM32F0) || defined(GD32F1) || defined(STM32F1) || defined(STM32G4)
 
 typedef TIM_TypeDef			YSS_TIMER_Dev;
 
@@ -91,15 +87,15 @@ public:
 		BIT_32
 	};
 
-	struct Setup
+	struct Setup_t
 	{
 		YSS_TIMER_Dev *dev;
 		uint8_t bit;
 	};
 
-	Timer(YSS_TIMER_Dev *config, const Drv::Config drvConfig);
+	Timer(YSS_TIMER_Dev *config, const Drv::Setup_t drvConfig);
 
-	Timer(const Drv::Setup drvSetup, const Setup setup);
+	Timer(const Drv::Setup_t drvSetup, const Setup_t setup);
 
 	void isrUpdate(void);
 

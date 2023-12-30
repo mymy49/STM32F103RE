@@ -32,6 +32,10 @@
 extern Clock clock;
 #endif
 
+#if defined(CRC)
+extern Crc32 crc32;
+#endif
+
 #if defined(EXTI)
 extern Exti exti;
 #endif

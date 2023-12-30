@@ -25,7 +25,7 @@
 
 #include <drv/mcu.h>
 
-#if defined(STM32F4_N) || defined (STM32F1_N) || defined(GD32F1)
+#if defined(STM32F4) || defined (STM32F1) || defined(GD32F1)
 
 #include <drv/peripheral.h>
 #include <drv/Uart.h>
@@ -33,7 +33,7 @@
 #include <yss/reg.h>
 #include <targets/st/bitfield.h>
 
-Uart::Uart(const Drv::Setup drvSetup, const Setup setup) : Drv(drvSetup)
+Uart::Uart(const Drv::Setup_t drvSetup, const Setup_t setup) : Drv(drvSetup)
 {
 	mTxDma = &setup.txDma;
 	mTxDmaInfo = setup.txDmaInfo;

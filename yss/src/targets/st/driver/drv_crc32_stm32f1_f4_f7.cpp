@@ -25,13 +25,13 @@
 
 #include <drv/mcu.h>
 
-#if defined(GD32F1) || defined(STM32F4_N) || defined(STM32F7_N)
+#if defined(GD32F1) || defined(STM32F4) || defined(STM32F7) | defined(STM32F1)
 
 #include <drv/peripheral.h>
 #include <drv/Crc32.h>
 #include <targets/st/bitfield.h>
 
-Crc32::Crc32(YSS_CRC32_Dev *peri, const Drv::Config drvConfig) : Drv(drvConfig)
+Crc32::Crc32(YSS_CRC32_Dev *peri, const Drv::Setup_t drvConfig) : Drv(drvConfig)
 {
 	mPeri = peri;
 	reset();

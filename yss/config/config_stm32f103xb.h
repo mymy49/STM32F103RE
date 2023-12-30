@@ -73,6 +73,9 @@
 #define CAPTURE3_ENABLE		false
 #define CAPTURE4_ENABLE		false
 
+// CRC32 활성화
+#define CRC32_ENABLE		false
+
 // I2C 활성화
 #define I2C1_ENABLE			false
 #define I2C2_ENABLE			false

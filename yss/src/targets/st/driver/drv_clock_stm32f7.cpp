@@ -25,7 +25,7 @@
 
 #include <drv/peripheral.h>
 
-#if defined(STM32F7_N)
+#if defined(STM32F7)
 
 #include <drv/Clock.h>
 #include <yss/reg.h>
@@ -289,10 +289,17 @@ error:
 #if defined(PLL_P_USE)
 uint32_t Clock::getMainPllPFrequency(void)
 {
-	uint32_t clk = gHseFreq;
+	uint32_t clk;
+
+	if(RCC->PLLCFGR & RCC_PLLCFGR_PLLSRC_Msk)
+		clk = gHseFreq;
+	else
+		clk = HSI_FREQ;
+
 	clk /= ((RCC->PLLCFGR & RCC_PLLCFGR_PLLM_Msk) >> RCC_PLLCFGR_PLLM_Pos);
 	clk *= ((RCC->PLLCFGR & RCC_PLLCFGR_PLLN_Msk) >> RCC_PLLCFGR_PLLN_Pos);
 	clk /= 2  * (((RCC->PLLCFGR & RCC_PLLCFGR_PLLP_Msk) >> RCC_PLLCFGR_PLLP_Pos ) + 1);
+
 	return clk;
 }
 #endif
@@ -300,7 +307,13 @@ uint32_t Clock::getMainPllPFrequency(void)
 #if defined(PLL_Q_USE)
 uint32_t Clock::getMainPllQFrequency(void)
 {
-	uint32_t clk = gHseFreq;
+	uint32_t clk;
+
+	if(RCC->PLLCFGR & RCC_PLLCFGR_PLLSRC_Msk)
+		clk = gHseFreq;
+	else
+		clk = HSI_FREQ;
+
 	clk /= ((RCC->PLLCFGR & RCC_PLLCFGR_PLLM_Msk) >> RCC_PLLCFGR_PLLM_Pos);
 	clk *= ((RCC->PLLCFGR & RCC_PLLCFGR_PLLN_Msk) >> RCC_PLLCFGR_PLLN_Pos);
 	clk /= ((RCC->PLLCFGR & RCC_PLLCFGR_PLLQ_Msk) >> RCC_PLLCFGR_PLLQ_Pos);
@@ -311,7 +324,13 @@ uint32_t Clock::getMainPllQFrequency(void)
 #if defined(PLL_R_USE)
 uint32_t Clock::getMainPllRFrequency(void)
 {
-	uint32_t clk = gHseFreq;
+	uint32_t clk;
+
+	if(RCC->PLLCFGR & RCC_PLLCFGR_PLLSRC_Msk)
+		clk = gHseFreq;
+	else
+		clk = HSI_FREQ;
+
 	clk /= ((RCC->PLLCFGR & RCC_PLLCFGR_PLLM_Msk) >> RCC_PLLCFGR_PLLM_Pos);
 	clk *= ((RCC->PLLCFGR & RCC_PLLCFGR_PLLN_Msk) >> RCC_PLLCFGR_PLLN_Pos);
 	clk /= ((RCC->PLLCFGR & RCC_PLLCFGR_PLLR_Msk) >> RCC_PLLCFGR_PLLR_Pos);
@@ -383,7 +402,7 @@ uint32_t Clock::getSdmmcClockFrequency(void)
 		return getPll48ClkClockFrequency();
 }
 
-bool Clock::setSysclk(uint8_t sysclkSrc, uint8_t ahb, uint8_t apb1, uint8_t apb2, uint8_t vcc)
+error Clock::setSysclk(uint8_t sysclkSrc, uint8_t ahb, uint8_t apb1, uint8_t apb2, uint8_t vcc)
 {
 	(void)vcc;
 
@@ -399,17 +418,17 @@ bool Clock::setSysclk(uint8_t sysclkSrc, uint8_t ahb, uint8_t apb1, uint8_t apb2
 	case HSE:
 		// HSE 활성화 점검
 		if (~RCC->CR & RCC_CR_HSERDY_Msk)
-			return false;
+			return error::HSE_NOT_READY;
 		clk = gHseFreq;
 		break;
 	case PLL:
 		// PLL 활성화 점검
 		if (~RCC->CR & RCC_CR_PLLRDY_Msk)
-			return false;
+			return error::PLL_NOT_READY;
 		clk = getMainPllPFrequency();
 		break;
 	default:
-		return false;
+		return error::CLK_SRC_NOT_ABLE;
 	}
 
 	switch(getPowerScale())
@@ -447,15 +466,15 @@ bool Clock::setSysclk(uint8_t sysclkSrc, uint8_t ahb, uint8_t apb1, uint8_t apb2
 	}
 
 	if (ahbClk > ahbMax)
-		return false;
+		return error::WRONG_CLOCK_FREQUENCY;
 
 	apb1Clk = ahbClk / gPpreDiv[apb1];
 	if (apb1Clk > apb1Max)
-		return false;
+		return error::WRONG_CLOCK_FREQUENCY;
 
 	apb2Clk = ahbClk / gPpreDiv[apb2];
 	if (apb2Clk > apb2Max)
-		return false;
+		return error::WRONG_CLOCK_FREQUENCY;
 
 	if(ovrFlag)
 	{
@@ -473,7 +492,14 @@ bool Clock::setSysclk(uint8_t sysclkSrc, uint8_t ahb, uint8_t apb1, uint8_t apb2
 	// 클럭 소스 변경
 	setFieldData(RCC->CFGR, RCC_CFGR_SW_Msk, sysclkSrc, RCC_CFGR_SW_Pos);
 
-	return true;
+	for (uint32_t i = 0; i < 1000000; i++)
+	{
+		// PLL 활성화 확인
+		if (getFieldData(RCC->CFGR, RCC_CFGR_SW_Msk, RCC_CFGR_SW_Pos) == getFieldData(RCC->CFGR, RCC_CFGR_SWS_Msk, RCC_CFGR_SWS_Pos))
+			return error::ERROR_NONE;
+	}
+	
+	return error::SYSCLK_WAS_NOT_CHANGED;
 }
 
 uint8_t Clock::getPowerScale(void)
@@ -541,25 +567,6 @@ void Clock::enableSdram(bool en)
 {
 	enableAhb3Clock(RCC_AHB3ENR_FMCEN_Pos, en);
 }
-
-#if defined(GD32F4) || defined(STM32F429xx) || defined(STM32F7)
-void Clock::setLtdcDivisionFactor(uint8_t div)
-{
-#if defined(GD32F4) || defined(GD32F4)
-	setFieldData(RCC[RCC_REG::DCKCFGR], RCC_DCKCFGR_PLLSAIDIVR_Msk, div, RCC_DCKCFGR_PLLSAIDIVR_Pos);
-#elif defined(STM32F7)
-	setFieldData(RCC[RCC_REG::DCKCFGR1], RCC_DCKCFGR1_PLLSAIDIVR_Msk, div, RCC_DCKCFGR1_PLLSAIDIVR_Pos);
-#endif
-}
-
-uint32_t Clock::getLtdcClockFrequency(void)
-{
-#if defined(STM32F429xx)
-	uint32_t div = getFieldData(RCC->DCKCFGR, RCC_DCKCFGR_PLLSAIDIVR_Msk, RCC_DCKCFGR_PLLSAIDIVR_Pos);
-#endif
-	return getSaiPllRFrequency() / (2 << div);
-}
-#endif
 
 #if defined(SAIPLL_USE)
 bool Clock::enableSaiPll(uint16_t n, uint8_t pDiv, uint8_t qDiv, uint8_t rDiv)
@@ -647,25 +654,10 @@ error:
 	return false;
 }
 
-#if defined(STM32F7)
-uint32_t Clock::getI2sClockFrequency(void)
-{
-	if(RCC->CFGR & RCC_CFGR_I2SSRC_Msk)
-//#warning  "외부 클럭에 대한 설정이 가능하도록 업데이트 해야 함"
-		return 0;
-	else
-		return getI2sPllRFrequency();
-}
-#endif
-
 #if defined(GET_SAI1A_FREQ_USE)
 	void setSai1AClockSource(uint8_t src)
 	{
-#if defined(STM32F429xx)
-		setFieldData(RCC->DCKCFGR, RCC_DCKCFGR_SAI1ASRC_Msk, src, RCC_DCKCFGR_SAI1ASRC_Pos);
-#else
 		(void)src;
-#endif
 	}
 
 	uint32_t getSai1AClockFrequency(void);

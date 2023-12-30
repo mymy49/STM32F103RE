@@ -28,11 +28,11 @@
 
 #include "mcu.h"
 
-#if defined(GD32F4) || defined(STM32F7)
+#if defined(GD32F4)
 
 typedef volatile uint32_t	YSS_I2S_Peri;
 
-#elif defined(STM32F4_N)
+#elif defined(STM32F4) || defined(STM32F7)
 
 typedef SPI_TypeDef			YSS_I2S_Peri;
 
@@ -80,7 +80,7 @@ class I2s : public Drv
 		STD_PCM
 	};
 
-	I2s(const Drv::Config drvConfig, const Config config);
+	I2s(const Drv::Setup_t drvSetup, const Config config);
 	
 	// I2S 장치를 Main으로 초기화 한다.
 	//

@@ -167,7 +167,11 @@ namespace define
 				PB1_OTG_HS_ULPI_D2 = 10,
 				PB1_ETH_MII_RXD3 = 11,
 				PB1_EVENTOUT = 15,
-
+				
+				PB2_SAI1_SD_A = 6,
+				PB2_SPI3_MOSI = 7,
+				PB2_I2S3_SD = 7,
+				PB2_QUADSPI_CLK = 9,
 				PB2_EVENTOUT = 15,
 
 				PB3_JTDO = 0,
@@ -199,9 +203,11 @@ namespace define
 				PB5_EVENTOUT = 15,
 
 				PB6_TIM4_CH1 = 2,
+				PB6_HDMI_CEC = 3,
 				PB6_I2C1_SCL = 4,
 				PB6_USART1_TX = 7,
 				PB6_CAN2_TX = 9,
+				PB6_QUADSPI_BK1_NCS = 10,
 				PB6_FMC_SDNE1 = 12,
 				PB6_DCMI_D5 = 13,
 				PB6_EVENTOUT = 15,
@@ -442,17 +448,29 @@ namespace define
 				PD10_FMC_D15 = 12,
 				PD10_LCD_B3 = 14,
 				PD10_EVENTOUT = 15,
-
+				
+				PD11_I2C4_SMBA = 4,
 				PD11_USART3_CTS = 7,
+				PD11_QUADSPI_BK1_IO0 = 9,
+				PD11_SAI2_SD_A = 10,
 				PD11_FMC_A16 = 12,
+				PD11_FMC_CLE = 12,
 				PD11_EVENTOUT = 15,
 
 				PD12_TIM4_CH1 = 2,
+				PD12_LPTIM1_IN1 = 3,
+				PD12_I2C4_SCL = 4,
 				PD12_USART3_RTS = 7,
+				PD12_QUADSPI_BK1_IO1 = 9,
+				PD12_SAI2_FS_A = 10,
 				PD12_FMC_A17 = 12,
 				PD12_EVENTOUT = 15,
 
 				PD13_TIM4_CH2 = 2,
+				PD13_LPTIM1_OUT = 3,
+				PD13_I2C4_SDA = 4,
+				PD13_QUADSPI_BK1_IO3 = 9,
+				PD13_SAI2_SCK_A = 10,
 				PD13_FMC_A18 = 12,
 				PD13_EVENTOUT = 15,
 
@@ -476,8 +494,9 @@ namespace define
 				PE1_EVENTOUT = 15,
 
 				PE2_TRACECLK = 0,
-				PE2_SPI4_CLK = 5,
+				PE2_SPI4_SCK = 5,
 				PE2_SAI1_MCLK_A = 6,
+				PE2_QUADSPI_BK1_IO2 = 9,
 				PE2_ETH_MII_TXD3 = 11,
 				PE2_FMC_A23 = 12,
 				PE2_EVENTOUT = 15,

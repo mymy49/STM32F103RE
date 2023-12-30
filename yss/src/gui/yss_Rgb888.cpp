@@ -42,7 +42,7 @@ Rgb888::~Rgb888(void)
 
 void Rgb888::drawDot(int16_t x, int16_t y)
 {
-	uint8_t *des = (uint8_t *)mFrameBuffer, *src = (uint8_t *)&mBrushColor;
+	uint8_t *des = (uint8_t *)mFrameBuffer, *src = (uint8_t *)&mBrushColorCode;
 
 	des += (mSize.width * y + x) * 3;
 	*des++ = *src++;

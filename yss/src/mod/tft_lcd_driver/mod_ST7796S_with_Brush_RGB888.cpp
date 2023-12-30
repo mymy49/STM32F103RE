@@ -68,7 +68,7 @@ void ST7796S_with_Brush_RGB888::eraseDot(Position_t pos)
 	{
 		enable();
 		setWindows(pos.x, pos.y);
-		sendCmd(MEMORY_WRITE, &mBgColor, 3);
+		sendCmd(MEMORY_WRITE, &mBgColorCode, 3);
 		disable();
 	}
 }
@@ -119,16 +119,16 @@ void ST7796S_with_Brush_RGB888::clear(void)
 	}
 	
 	mBmp888Buffer->setSize(width, height);
-	mBmp888Buffer->setBackgroundColor(mFontBgColor);
+	mBmp888Buffer->setBackgroundColor(mBgColor);
 	mBmp888Buffer->clear();
 	
 	for(uint32_t  i=0;i<loop;i++)
 	{
-		drawBmp(Position_t{0, (int16_t)(height * i)}, mBmp888Buffer->getBmp888());
+		drawBitmap(Position_t{0, (int16_t)(height * i)}, mBmp888Buffer->getBitmap());
 	}
 
 	if(lastPos)
-		drawBmp(Position_t{0, (int16_t)lastPos}, mBmp888Buffer->getBmp888());
+		drawBitmap(Position_t{0, (int16_t)lastPos}, mBmp888Buffer->getBitmap());
 }
 
 void ST7796S_with_Brush_RGB888::fillRect(Position_t p1, Position_t p2)
@@ -177,7 +177,7 @@ void ST7796S_with_Brush_RGB888::fillRect(Position_t p1, Position_t p2)
 	
 	for(uint32_t  i=0;i<loop;i++)
 	{
-		drawBmp(pos, mBmp888Buffer->getBmp888());
+		drawBitmap(pos, mBmp888Buffer->getBitmap());
 		pos.y += bufHeight;
 	}
 	
@@ -185,7 +185,7 @@ void ST7796S_with_Brush_RGB888::fillRect(Position_t p1, Position_t p2)
 	if(height)
 	{
 		mBmp888Buffer->setSize(width, height);
-		drawBmp(Position_t{pos.x, pos.y}, mBmp888Buffer->getBmp888());
+		drawBitmap(Position_t{pos.x, pos.y}, mBmp888Buffer->getBitmap());
 	}
 }
 
@@ -196,7 +196,6 @@ void ST7796S_with_Brush_RGB888::fillRect(Position_t pos, Size_t size)
 
 void ST7796S_with_Brush_RGB888::setBrushColor(Color color)
 {
-	mBrushColor = color.getRgb888Code();
 	mBrushColorCode = color.getRgb888Code();
 }
 
@@ -204,8 +203,7 @@ void ST7796S_with_Brush_RGB888::setBrushColor(uint8_t red, uint8_t green, uint8_
 {
 	Color color(red, green, blue);
 
-	mBrushColor = color.getRgb888Code();
-	mBrushColorCode = mBrushColor;
+	mBrushColorCode = color.getRgb888Code();
 }
 
 #endif

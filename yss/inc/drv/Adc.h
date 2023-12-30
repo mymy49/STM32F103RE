@@ -28,26 +28,12 @@
 
 #include "peripheral.h"
 
-#if defined(STM32F4) || defined(STM32F7) || defined(GD32F4)
-
-#include <targets/st_gigadevice/define_adc_stm32_gd32f4_f7.h>
-
-#define YSS_DRV_ADC_MAX_CH	18
-typedef volatile uint32_t	YSS_ADC_Dev;
-
-#elif defined(STM32F1)
-
-#include <targets/st_gigadevice/define_adc_stm32_gd32f1.h>
-
-#define YSS_DRV_ADC_MAX_CH	18
-typedef volatile uint32_t	YSS_ADC_Dev;
-
-#elif defined(GD32F1)
+#if defined(GD32F1)
 
 #define YSS_DRV_ADC_MAX_CH	18
 typedef ADC_TypeDef			YSS_ADC_Dev;
 
-#elif defined(STM32F4_N) || defined(STM32F7_N) || defined(STM32F0_N) || defined(STM32F1_N)
+#elif defined(STM32F4) || defined(STM32F7) || defined(STM32F0) || defined(STM32F1)
 
 #define YSS_DRV_ADC_MAX_CH	18
 typedef ADC_TypeDef			YSS_ADC_Dev;
@@ -94,13 +80,13 @@ class Adc : public Drv
 	//		결과값을 가져올 ADC Pin을 설정한다.
 	uint16_t get(uint8_t pin);
 
-#if defined(STM32F0_N)
+#if defined(STM32F0)
 	// 샘플 시간을 설정한다.
 	// 
 	// uint8_t sampleTime
 	//		샘플 시간을 설정한다. 설정 값은 MCU의 개별 설정에 따라 각기 다르다.
 	void setSampleTime(uint8_t sampleTime);
-#elif defined(STM32F1_N) || defined(STM32F4_N) || defined(STM32F7_N) || defined(GD32F1)
+#elif defined(STM32F1) || defined(STM32F4) || defined(STM32F7) || defined(GD32F1)
 	// 샘플 시간을 설정한다.
 	// 
 	// uint8_t pin
@@ -111,14 +97,14 @@ class Adc : public Drv
 #endif
 
 	// 아래 함수들은 시스템 함수로 사용자 호출을 금한다.
-	struct Setup
+	struct Setup_t
 	{
 		YSS_ADC_Dev *dev;
 	};
 
 	Adc(YSS_ADC_Dev *dev, void (*clockFunc)(bool en), void (*nvicFunc)(bool en), void (*resetFunc)(void));
 
-	Adc(const Drv::Setup drvSetup, const Setup setup);
+	Adc(const Drv::Setup_t drvSetup, const Setup_t setup);
 
 	void isr(void);
 

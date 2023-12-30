@@ -25,7 +25,7 @@
 
 #include <drv/peripheral.h>
 
-#if defined(STM32F4_N)
+#if defined(STM32F4)
 
 #include <drv/Clock.h>
 #include <yss/reg.h>
@@ -416,7 +416,7 @@ uint8_t Clock::getPowerScale(void)
 #endif
 }
 
-bool Clock::setSysclk(uint8_t sysclkSrc, uint8_t ahb, uint8_t apb1, uint8_t apb2, uint8_t vcc)
+error Clock::setSysclk(uint8_t sysclkSrc, uint8_t ahb, uint8_t apb1, uint8_t apb2, uint8_t vcc)
 {
 	(void)vcc;
 
@@ -435,17 +435,17 @@ bool Clock::setSysclk(uint8_t sysclkSrc, uint8_t ahb, uint8_t apb1, uint8_t apb2
 	case HSE:
 		// HSE 활성화 점검
 		if (~RCC->CR & RCC_CR_HSERDY_Msk)
-			return false;
+			return error::HSE_NOT_READY;
 		clk = gHseFreq;
 		break;
 	case PLL:
 		// PLL 활성화 점검
 		if (~RCC->CR & RCC_CR_PLLRDY_Msk)
-			return false;
+			return error::PLL_NOT_READY;
 		clk = getMainPllPFrequency();
 		break;
 	default:
-		return false;
+		return error::CLK_SRC_NOT_ABLE;
 	}
 
 	switch(getPowerScale())
@@ -496,15 +496,15 @@ bool Clock::setSysclk(uint8_t sysclkSrc, uint8_t ahb, uint8_t apb1, uint8_t apb2
 #endif
 
 	if (ahbClk > ahbMax)
-		return false;
+		return error::WRONG_CLOCK_FREQUENCY;
 
 	apb1Clk = ahbClk / gPpreDiv[apb1];
 	if (apb1Clk > apb1Max)
-		return false;
+		return error::WRONG_CLOCK_FREQUENCY;
 
 	apb2Clk = ahbClk / gPpreDiv[apb2];
 	if (apb2Clk > apb2Max)
-		return false;
+		return error::WRONG_CLOCK_FREQUENCY;
 
 #if defined(OVER_DRVIE_USE)
 	if(ovrFlag)
@@ -523,7 +523,14 @@ bool Clock::setSysclk(uint8_t sysclkSrc, uint8_t ahb, uint8_t apb1, uint8_t apb2
 	// 클럭 소스 변경
 	setFieldData(RCC->CFGR, RCC_CFGR_SW_Msk, sysclkSrc, RCC_CFGR_SW_Pos);
 
-	return true;
+	for (uint32_t i = 0; i < 1000000; i++)
+	{
+		// PLL 활성화 확인
+		if (getFieldData(RCC->CFGR, RCC_CFGR_SW_Msk, RCC_CFGR_SW_Pos) == getFieldData(RCC->CFGR, RCC_CFGR_SWS_Msk, RCC_CFGR_SWS_Pos))
+			return error::ERROR_NONE;
+	}
+	
+	return error::SYSCLK_WAS_NOT_CHANGED;
 }
 
 void Clock::enableAhb1Clock(uint32_t position, bool en)
@@ -588,14 +595,10 @@ void Clock::enableSdram(bool en)
 }
 #endif
 
-#if defined(GD32F4) || defined(STM32F429xx) || defined(STM32F7)
+#if defined(GD32F4) || defined(STM32F429xx)
 void Clock::setLtdcDivisionFactor(uint8_t div)
 {
-#if defined(GD32F4) || defined(GD32F4)
 	setFieldData(RCC[RCC_REG::DCKCFGR], RCC_DCKCFGR_PLLSAIDIVR_Msk, div, RCC_DCKCFGR_PLLSAIDIVR_Pos);
-#elif defined(STM32F7)
-	setFieldData(RCC[RCC_REG::DCKCFGR1], RCC_DCKCFGR1_PLLSAIDIVR_Msk, div, RCC_DCKCFGR1_PLLSAIDIVR_Pos);
-#endif
 }
 
 uint32_t Clock::getLtdcClockFrequency(void)
@@ -695,17 +698,6 @@ bool Clock::enableSaiPll(uint16_t n, uint8_t pDiv, uint8_t qDiv, uint8_t rDiv)
 error:
 	return false;
 }
-
-#if defined(STM32F7)
-uint32_t Clock::getI2sClockFrequency(void)
-{
-	if(RCC->CFGR & RCC_CFGR_I2SSRC_Msk)
-//#warning  "외부 클럭에 대한 설정이 가능하도록 업데이트 해야 함"
-		return 0;
-	else
-		return getI2sPllRFrequency();
-}
-#endif
 
 #if defined(GET_SAI1A_FREQ_USE)
 	void setSai1AClockSource(uint8_t src)

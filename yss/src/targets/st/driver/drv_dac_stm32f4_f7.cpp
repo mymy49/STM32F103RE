@@ -27,13 +27,13 @@
 
 #if defined(DAC1)
 
-#if defined(STM32F4_N) || defined(STM32F7_N)
+#if defined(STM32F4) || defined(STM32F7)
 
 #include <drv/Dac.h>
 #include <yss/reg.h>
 #include <targets/st/bitfield.h>
 
-Dac::Dac(const Drv::Setup drvSetup, const Setup setup) : Drv(drvSetup)
+Dac::Dac(const Drv::Setup_t drvSetup, const Setup_t setup) : Drv(drvSetup)
 {
 	mDev = setup.dev;
 }

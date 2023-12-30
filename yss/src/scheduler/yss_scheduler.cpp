@@ -43,7 +43,7 @@ struct Task
 	int32_t *malloc;
 	uint32_t *sp;
 	uint32_t  size;
-	bool able, allocated, trigger;
+	bool able, allocated, trigger, signalLock;
 	int16_t lockCnt;
 	void (*entry)(void *);
 	void *var;
@@ -55,10 +55,9 @@ Task gYssThreadList[MAX_THREAD] =
 };
 
 static int32_t gNumOfThread = 1;
-static int32_t  gCurrentThreadNum, gRoundRobinThreadNum;
-
+static threadId  gCurrentThreadNum, gRoundRobinThreadNum, gHoldingThreadNum = -1;
 static threadId gPendingSignalThreadList[MAX_THREAD];
-static uint32_t gPendingSignalThreadCount, gLastPendingSignalThreadCount;
+static uint32_t gPendingSignalThreadCount;
 
 static Mutex gMutex;
 
@@ -76,8 +75,8 @@ namespace thread
 {
 void terminateThread(void);
 
-threadId add(void (*func)(void *var), void *var, int32_t stackSize) __attribute__((optimize("-O1")));
-threadId add(void (*func)(void *var), void *var, int32_t stackSize)
+threadId add(void (*func)(void *var), void *var, int32_t stackSize, bool signalLock) __attribute__((optimize("-O1")));
+threadId add(void (*func)(void *var), void *var, int32_t stackSize, bool signalLock)
 {
 	uint32_t i, *sp;
 
@@ -145,14 +144,15 @@ threadId add(void (*func)(void *var), void *var, int32_t stackSize)
 	gYssThreadList[i].trigger = false;
 	gYssThreadList[i].entry = func;
 	gYssThreadList[i].able = true;
+	gYssThreadList[i].signalLock = signalLock;
 
 	gNumOfThread++;
 	gMutex.unlock();
 	return i;
 }
 
-threadId add(void (*func)(void *), void *var, int32_t  stackSize, void *r8, void *r9, void *r10, void *r11, void *r12) __attribute__((optimize("-O1")));
-threadId add(void (*func)(void *), void *var, int32_t  stackSize, void *r8, void *r9, void *r10, void *r11, void *r12)
+threadId add(void (*func)(void *), void *var, int32_t  stackSize, void *r8, void *r9, void *r10, void *r11, void *r12, bool signalLock) __attribute__((optimize("-O1")));
+threadId add(void (*func)(void *), void *var, int32_t  stackSize, void *r8, void *r9, void *r10, void *r11, void *r12, bool signalLock)
 {
 	uint32_t  i, *sp;
 
@@ -231,22 +231,23 @@ threadId add(void (*func)(void *), void *var, int32_t  stackSize, void *r8, void
 	gYssThreadList[i].trigger = false;
 	gYssThreadList[i].entry = func;
 	gYssThreadList[i].able = true;
+	gYssThreadList[i].signalLock = signalLock;
 
 	gNumOfThread++;
 	gMutex.unlock();
 	return i;
 }
 
-threadId add(void (*func)(void), int32_t stackSize) __attribute__((optimize("-O1")));
-threadId add(void (*func)(void), int32_t stackSize)
+threadId add(void (*func)(void), int32_t stackSize, bool signalLock) __attribute__((optimize("-O1")));
+threadId add(void (*func)(void), int32_t stackSize, bool signalLock)
 {
-	return add((void (*)(void *))func, 0, stackSize);
+	return add((void (*)(void *))func, 0, stackSize, signalLock);
 }
 
-threadId add(void (*func)(void), int32_t stackSize, void *r8, void *r9, void *r10, void *r11, void *r12) __attribute__((optimize("-O1")));
-threadId add(void (*func)(void), int32_t stackSize, void *r8, void *r9, void *r10, void *r11, void *r12)
+threadId add(void (*func)(void), int32_t stackSize, void *r8, void *r9, void *r10, void *r11, void *r12, bool signalLock) __attribute__((optimize("-O1")));
+threadId add(void (*func)(void), int32_t stackSize, void *r8, void *r9, void *r10, void *r11, void *r12, bool signalLock)
 {
-	return add((void (*)(void *))func, 0, stackSize, r8, r9, r10, r11, r12);
+	return add((void (*)(void *))func, 0, stackSize, r8, r9, r10, r11, r12, signalLock);
 }
 
 void remove(threadId id) __attribute__((optimize("-O1")));
@@ -353,24 +354,38 @@ void waitForSignal(void)
 void signal(threadId id) __attribute__((optimize("-O1")));
 void signal(threadId id)
 {
-	uint32_t i;
+	uint32_t count;
+
+	if(id < 0 || gYssThreadList[id].signalLock)
+		return;
 
 	__disable_irq();
-	for(i=0;i<gPendingSignalThreadCount;i++)
+	if(gPendingSignalThreadCount >= MAX_THREAD)
+		goto finish;
+	
+	// 중복 id 검사
+	for(uint32_t i = 0; i < gPendingSignalThreadCount; i++)
 	{
+		// 중복 id가 있을 경우 끌어 올리기
 		if(gPendingSignalThreadList[i] == id)
-			goto exchange;
+		{
+			count = gPendingSignalThreadCount - 1;
+			for(uint32_t j = i; j < count; j++)
+				gPendingSignalThreadList[j] = gPendingSignalThreadList[j+1];
+			gPendingSignalThreadList[count] = id;
+			if(gHoldingThreadNum < 0)
+				gHoldingThreadNum = gCurrentThreadNum;
+			goto finish;
+		}
 	}
-	goto add;
-
-exchange :
-	for(uint32_t j=i;j<gPendingSignalThreadCount;j++)
-		gPendingSignalThreadList[j] = gPendingSignalThreadList[j+1];
-
-add :
+	
+	// 중복 id가 없으면 새로 등록
 	gPendingSignalThreadList[gPendingSignalThreadCount++] = id;
 	gYssThreadList[gCurrentThreadNum].able = true;
-	SCB->ICSR = SCB_ICSR_PENDSVSET_Msk;
+	if(gHoldingThreadNum < 0)
+		gHoldingThreadNum = gCurrentThreadNum;
+finish :
+	SCB->ICSR |= SCB_ICSR_PENDSVSET_Msk;
 	__enable_irq();
 }
 
@@ -379,7 +394,7 @@ void yield(void)
 {
 #if !defined(YSS__MCU_SMALL_SRAM_NO_SCHEDULE)
 #if defined(YSS__CORE_CM3_CM4_CM7_H_GENERIC) || defined(YSS__CORE_CM33_H_GENERIC) || defined(YSS__CORE_CM0_H_GENERIC)
-	SCB->ICSR |= SCB_ICSR_PENDSTSET_Msk;
+	SCB->ICSR |= SCB_ICSR_PENDSVSET_Msk;
 #endif
 #endif
 }
@@ -429,6 +444,7 @@ triggerId add(void (*func)(void *), void *var, int32_t stackSize)
 	gYssThreadList[i].trigger = true;
 	gYssThreadList[i].entry = func;
 	gYssThreadList[i].able = false;
+	gYssThreadList[i].signalLock = false;
 
 	gNumOfThread++;
 
@@ -524,7 +540,9 @@ void run(triggerId id)
 #endif
 	gYssThreadList[id].able = true;
 	gPendingSignalThreadList[gPendingSignalThreadCount++] = id;
-	SCB->ICSR = SCB_ICSR_PENDSVSET_Msk;
+	if(gHoldingThreadNum < 0)
+		gHoldingThreadNum = gCurrentThreadNum;
+	SCB->ICSR |= SCB_ICSR_PENDSVSET_Msk;
 	__enable_irq();	 
 }
 
@@ -570,22 +588,12 @@ extern "C"
 #if !defined(YSS__MCU_SMALL_SRAM_NO_SCHEDULE)
 #if defined(YSS__CORE_CM3_CM4_CM7_H_GENERIC) || defined(YSS__CORE_CM33_H_GENERIC) || defined(YSS__CORE_CM0_H_GENERIC)
 		// 중복된 Thread를 실행하더라도 시스템에 큰 장애를 유발하지 않음으로 높은 우선순위 인터럽트의 딜레이를 줄이기 위해 __disable_irq() 함수를 호출하지 않음
-		if(gPendingSignalThreadCount == 0)
-		{
-			do
-			{
-				gRoundRobinThreadNum++;
-				if (gRoundRobinThreadNum >= MAX_THREAD)
-					gRoundRobinThreadNum = 0;
-			}while (!gYssThreadList[gRoundRobinThreadNum].able);
-		}
-
 		SCB->ICSR |= SCB_ICSR_PENDSVSET_Msk;
 #endif
 #endif
 	}
 	
-	void PendSV_Handler(void)__attribute__((optimize("-O1")));
+	void PendSV_Handler(void)__attribute__((optimize("-O1"))) __attribute__ ((naked));
 	void PendSV_Handler(void) 
 	{
 #if !defined(YSS__MCU_SMALL_SRAM_NO_SCHEDULE)
@@ -625,27 +633,35 @@ extern "C"
 		sp = 0;
 		
 		// 스택 포인터 교환  
+		__disable_irq();
 		if(gPendingSignalThreadCount)
 		{	// signal 또는 trigger가 발생하면 진입
-			__disable_irq();
-			if(gLastPendingSignalThreadCount == gPendingSignalThreadCount)
-				// 새로 등록된 Pending Signal이 없을 경우 정상적으로 할당된 시간을 마치고 들어온 것이므로 카운트 감소
-				gPendingSignalThreadCount--;
-
-			if(gPendingSignalThreadCount)
-			{	// 아직 남은 Pending Signal이 있는 경우 라운드 로빈 스케줄러 보다 우선 진입
-				gCurrentThreadNum = gPendingSignalThreadList[gPendingSignalThreadCount-1];
-				sp = (uint32_t)gYssThreadList[gCurrentThreadNum].sp;
-			}
-			gLastPendingSignalThreadCount = gPendingSignalThreadCount;
+			gPendingSignalThreadCount--;
+			gCurrentThreadNum = gPendingSignalThreadList[gPendingSignalThreadCount];
+			gPendingSignalThreadList[gPendingSignalThreadCount] = 0;
+			sp = (uint32_t)gYssThreadList[gCurrentThreadNum].sp;
 			__enable_irq();
 		}
-		
-		if(sp == 0)	
+		else if(gHoldingThreadNum >= 0)
+		{
+			gCurrentThreadNum = gHoldingThreadNum;
+			gHoldingThreadNum = -1;
+			sp = (uint32_t)gYssThreadList[gCurrentThreadNum].sp;
+		}
+		else
 		{	// signal 또는 trigger에서 SP 갱신이 없다면 라운드 로빈 스케줄러에 의해 선택된 쓰레드 수행
+			__enable_irq();
+			do
+			{
+				gRoundRobinThreadNum++;
+				if (gRoundRobinThreadNum >= MAX_THREAD)
+					gRoundRobinThreadNum = 0;
+			}while (!gYssThreadList[gRoundRobinThreadNum].able);
+
 			gCurrentThreadNum = gRoundRobinThreadNum;
 			sp = (uint32_t)gYssThreadList[gCurrentThreadNum].sp;
 		}
+		__enable_irq();
 
 		asm("mov r0, %0" : : "r" (sp));
 #if defined(YSS__CORE_CM3_CM4_CM7_H_GENERIC) || defined(YSS__CORE_CM33_H_GENERIC)
@@ -698,6 +714,7 @@ extern "C"
 		// RO에 저장된 스택 포인터를 PSP로 이동
 		asm("msr psp, r0");
 #endif
+		asm("bx lr");
 	}
 }
 #endif

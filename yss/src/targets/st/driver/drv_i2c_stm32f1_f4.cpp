@@ -25,7 +25,7 @@
 
 #include <drv/mcu.h>
 
-#if defined(STM32F4_N) || defined(GD32F1) || defined(STM32F1_N)
+#if defined(STM32F4) || defined(GD32F1) || defined(STM32F1)
 
 #include <drv/peripheral.h>
 #include <drv/I2c.h>
@@ -38,7 +38,7 @@
 #define TRANSMIT	false
 #define RECEIVE		true
 
-I2c::I2c(const Drv::Setup drvSetup, const Setup setup) : Drv(drvSetup)
+I2c::I2c(const Drv::Setup_t drvSetup, const Setup_t setup) : Drv(drvSetup)
 {
 	mDev = setup.dev;
 	mDataCount = 0;

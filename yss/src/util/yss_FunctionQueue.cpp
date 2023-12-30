@@ -131,6 +131,7 @@ void thread_run(FunctionQueue *task)
 		{
 			task->clear();
 			task->callErrorHandler(result);
+			result = error::ERROR_NONE;
 		}
 	}
 }

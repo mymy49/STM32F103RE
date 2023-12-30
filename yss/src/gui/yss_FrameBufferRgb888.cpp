@@ -30,7 +30,6 @@
 #include <yss/instance.h>
 #include <gui/FrameBufferRgb888.h>
 #include <std_ext/malloc.h>
-#include <gui/painter.h>
 /*
 FrameBufferRgb888::FrameBufferRgb888(void)
 {

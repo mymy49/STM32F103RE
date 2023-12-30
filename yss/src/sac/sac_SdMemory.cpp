@@ -348,9 +348,6 @@ namespace sac
 
 	error SdMemory::sendAcmd(uint8_t cmd, uint32_t arg, uint8_t responseType)
 	{
-		if(!mConnectedFlag)
-			error::NOT_CONNECTED;
-
 		error result;
 
 		SdMemory::CardStatus_t status;
@@ -412,7 +409,7 @@ namespace sac
 	error SdMemory::read(uint32_t block, void *des)
 	{
 		if(!mConnectedFlag)
-			error::NOT_CONNECTED;
+			return error::NOT_CONNECTED;
 
 		error result;
 
@@ -435,7 +432,7 @@ namespace sac
 	error SdMemory::write(uint32_t block, void *src)
 	{
 		if(!mConnectedFlag)
-			error::NOT_CONNECTED;
+			return error::NOT_CONNECTED;
 
 		error result;
 		while(mLastWriteTime.getMsec() <= 15 || mLastReadTime.getUsec() <= 500)

@@ -25,13 +25,13 @@
 
 #include <drv/peripheral.h>
 
-#if defined(LTDC) && defined(STM32F4_N) || defined(STM32F7_N)
+#if defined(LTDC) && defined(STM32F4) || defined(STM32F7)
 
 #include <drv/Ltdc.h>
 #include <yss/reg.h>
 #include <targets/st/bitfield.h>
 
-Ltdc::Ltdc(const Drv::Config drvConfig) : Drv(drvConfig)
+Ltdc::Ltdc(const Drv::Setup_t drvConfig) : Drv(drvConfig)
 {
 }
 

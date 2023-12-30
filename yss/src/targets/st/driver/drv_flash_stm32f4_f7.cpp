@@ -25,7 +25,7 @@
 
 #include <drv/peripheral.h>
 
-#if defined(STM32F4_N) || defined(STM32F7_N)
+#if defined(STM32F4) || defined(STM32F7)
 
 #include <targets/st/bitfield.h>
 #include <drv/Flash.h>
@@ -153,7 +153,7 @@ void Flash::setLatency(uint32_t freq, uint8_t vcc)
 }
 #endif
 
-#if defined(STM32F4_N)
+#if defined(STM32F4)
 void Flash::enableDataCache(bool en)
 {
 	if(en)
@@ -169,7 +169,7 @@ void Flash::enableInstructionCache(bool en)
 	else
 		FLASH->ACR &= ~FLASH_ACR_ICEN_Msk;
 }
-#elif defined(STM32F7_N)
+#elif defined(STM32F7)
 void Flash::enableArtAccelerator(bool en)
 {
 	setBitData(FLASH->ACR, en, FLASH_ACR_ARTEN_Pos);
@@ -243,6 +243,7 @@ void Flash::erase(uint16_t sector)
 	while (FLASH->CR & FLASH_CR_LOCK_Msk)
 		thread::yield();
 
+	setFieldData(FLASH->CR, FLASH_CR_PSIZE_Msk, 2, FLASH_CR_PSIZE_Pos);
 	FLASH->CR = FLASH_CR_SER_Msk | ((sector << FLASH_CR_SNB_Pos) & FLASH_CR_SNB_Msk);
 	FLASH->CR |= FLASH_CR_STRT_Msk;
 

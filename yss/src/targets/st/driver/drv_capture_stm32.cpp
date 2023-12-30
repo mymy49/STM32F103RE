@@ -25,14 +25,14 @@
 
 #include <drv/peripheral.h>
 
-#if defined(STM32F7_N) || defined(GD32F1)
+#if defined(STM32F7) || defined(GD32F1) || defined(STM32F1) || defined(STM32F4)
 
 #include <drv/peripheral.h>
 #include <drv/Capture.h>
 #include <yss/reg.h>
 #include <targets/st/bitfield.h>
 
-Capture::Capture(const Drv::Setup &drvSetup, const Setup &setup) : Drv(drvSetup)
+Capture::Capture(const Drv::Setup_t &drvSetup, const Setup_t &setup) : Drv(drvSetup)
 {
 	mPeri = setup.peri;
 	mIsr = 0;
@@ -100,7 +100,7 @@ void Capture::isrCapture(int32_t ccr, bool update)
 		mIsr(cnt, accCnt);
 }
 
-CaptureCh1::CaptureCh1(const Drv::Setup &drvSetup, const Capture::Setup &setup) : Capture(drvSetup, setup)
+CaptureCh1::CaptureCh1(const Drv::Setup_t &drvSetup, const Capture::Setup_t &setup) : Capture(drvSetup, setup)
 {
 	
 }
@@ -131,7 +131,7 @@ void CaptureCh1::setIsr(void (*isr)(uint32_t cnt, uint64_t  accCnt))
 
 
 
-CaptureCh2::CaptureCh2(const Drv::Setup &drvSetup, const Capture::Setup &setup) : Capture(drvSetup, setup)
+CaptureCh2::CaptureCh2(const Drv::Setup_t &drvSetup, const Capture::Setup_t &setup) : Capture(drvSetup, setup)
 {
 	
 }
@@ -145,7 +145,8 @@ void CaptureCh2::initializeChannel(uint8_t option)
 		mPeri->CCER &= ~TIM_CCER_CC2P_Msk;
 	else
 		mPeri->CCER |= TIM_CCER_CC2P_Msk;
-
+	
+	setFieldData(mPeri->CCMR1, TIM_CCMR1_IC2F_Msk, 8, TIM_CCMR1_IC2F_Pos);
 	mPeri->CCER |= TIM_CCER_CC2E_Msk;
 	mPeri->DIER |= TIM_DIER_CC2IE_Msk;
 }
@@ -162,7 +163,7 @@ void CaptureCh2::setIsr(void (*isr)(uint32_t cnt, uint64_t  accCnt))
 
 
 
-CaptureCh3::CaptureCh3(const Drv::Setup &drvSetup, const Capture::Setup &setup) : Capture(drvSetup, setup)
+CaptureCh3::CaptureCh3(const Drv::Setup_t &drvSetup, const Capture::Setup_t &setup) : Capture(drvSetup, setup)
 {
 	
 }
@@ -191,7 +192,7 @@ void CaptureCh3::setIsr(void (*isr)(uint32_t cnt, uint64_t  accCnt))
 	mIsr = isr;
 }
 
-CaptureCh4::CaptureCh4(const Drv::Setup &drvSetup, const Capture::Setup &setup) : Capture(drvSetup, setup)
+CaptureCh4::CaptureCh4(const Drv::Setup_t &drvSetup, const Capture::Setup_t &setup) : Capture(drvSetup, setup)
 {
 	
 }

@@ -25,7 +25,7 @@
 
 #include <drv/peripheral.h>
 
-#if defined(STM32F4_N) || defined(STM32F7_N)
+#if defined(STM32F4) || defined(STM32F7)
 
 #include <drv/Sdram.h>
 #include <yss.h>
@@ -60,7 +60,7 @@ static void waitWhileBusy(void);
 static void setSdcr(uint8_t bank, Sdcr obj);
 static void setCmd(uint8_t bank, uint16_t mrd, uint8_t nrfs, uint8_t mode);
 
-Sdram::Sdram(const Drv::Config drvConfig) : Drv(drvConfig)
+Sdram::Sdram(const Drv::Setup_t drvConfig) : Drv(drvConfig)
 {
 	
 }

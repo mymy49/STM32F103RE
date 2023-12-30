@@ -25,7 +25,7 @@
 
 #include <drv/mcu.h>
 
-#if defined(GD32F1) || defined(STM32F1_N)
+#if defined(GD32F1) || defined(STM32F1)
 
 #include <drv/Can.h>
 #include <yss/thread.h>
@@ -37,7 +37,7 @@
 #define CAN_MODE_INIT		0x01
 #define CAN_MODE_NORMAL		0X00
 
-Can::Can(const Drv::Setup drvSetup, const Setup setup) : Drv(drvSetup)
+Can::Can(const Drv::Setup_t drvSetup, const Setup_t setup) : Drv(drvSetup)
 {
 	mDev = setup.dev;
 	mHead = 0;
